@@ -1,0 +1,29 @@
+#sidebar{
+    height: 100vh;
+    background-color: #2285e0;
+}
+.sidebar__link{
+    text-decoration: none;
+}
+.sidebar__icon{
+    position: relative;
+    top: -6px;
+    flex:30;
+    font-size: 25px;
+    text-align: center;
+}
+.sidebar__title{
+    flex:70;
+}
+
+.sidebar__link:hover,
+.active{
+    background-color: rgba(248, 248, 248, 0.852);
+}
+
+.sidebar__link:hover span,
+.sidebar__link:hover .sidebar__title,
+.active .sidebar__title,
+.active span{
+    color: #E65F2B;
+}
