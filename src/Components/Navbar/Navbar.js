@@ -1,19 +1,44 @@
 // @ts-nocheck
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Dropdown, Nav,Col, Row,Form,Navbar} from 'react-bootstrap'
-import  "./navbar.css"
-import vamp from '../../assets/images/vamp.jpg'
-import { auth } from '../../config/firebase_config'
-import { signOut } from 'firebase/auth'
-import {useAuthState} from 'react-firebase-hooks/auth'
 import { useNavigate } from 'react-router-dom'
+import vamp from '../../assets/images/vamp.jpg'
+import  "./navbar.css"
+import { auth,db } from '../../config/firebase_config'
+import { signOut } from 'firebase/auth'
+import { collection, doc, setDoc, query,where, getDocs, getDoc, limit } from "firebase/firestore"; 
+import {useAuthState} from 'react-firebase-hooks/auth'
 function NavigateBar() {
     const [user]=useAuthState(auth);
-  const Navigate=useNavigate();
+    const Navigate=useNavigate();
 
-    const searching=()=>{
+   async function abc(){
+    const docRef = collection(db, "users");
+    const querySnapshot = await getDocs(query(docRef));
+    console.log(querySnapshot)
+    querySnapshot.forEach((doc) => {
+    console.log(doc.id, " => ", doc.data().avartar);
+    });
+    
+    // if (docSnap) {
+    //   console.log("Document data:", docSnap);
+    // } else {
+    //   // docSnap.data() will be undefined in this case
+    //   console.log("No such document!");
+    // }
+   }
+   abc()
 
-    }
+    // useEffect( () => {
+    //     async function test () {
+    //         const result= await  getDocs(collection(db,'users') );
+    //         console.log(result);
+    //     }
+
+    // });
+    // const searching=()=>{
+
+    // }
     const signUserOut= async ()=>{
         await signOut(auth)
     }
