@@ -9,10 +9,10 @@ function Main() {
   return (
     <>
       <Row>
-        <Col sm='2'className='p-0'>
+        <Col xs='1' sm='2'className='p-0'>
           <Sidebar/>
         </Col>
-        <Col sm='10'className=''>
+        <Col  xs='11' sm='10'className='p-0'>
           <Row>
             <NavigateBar/>
           </Row>

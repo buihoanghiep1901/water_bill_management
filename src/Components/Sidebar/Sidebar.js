@@ -7,10 +7,10 @@ import {NavLink} from 'react-router-dom';
 
 function Sidebar() {
   return (
-    <Navbar expand="lg" id="sidebar" >
+    <Navbar expand="lg" id="sidebar" className='vh-100 py-0' >
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           
-          <Navbar.Collapse id="basic-navbar-nav" className='flex-column h-100' >
+          <Navbar.Collapse id="basic-navbar-nav" className='flex-column h-100 sidebar border-4' >
             <h3 className='fs-5  mt-4 mb-5 fw-bold text-white text-center'>Water bill management</h3>
             
             <Nav className="mt-5 w-100  d-flex flex-column text-white ">

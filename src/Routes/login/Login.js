@@ -1,11 +1,11 @@
 
 // @ts-nocheck
 import React, { useState } from "react";
+import { signInWithEmailAndPassword , createUserWithEmailAndPassword} from "firebase/auth";
 import { Form, Button, Alert,Row, Col} from "react-bootstrap";
 import BackgroundImage from "../../assets/images/signin.jpg";
 import "./login.css";
 
-import { signInWithEmailAndPassword , createUserWithEmailAndPassword} from "firebase/auth";
 import { auth } from "../../config/firebase_config";
 import { useNavigate } from "react-router-dom";
 
@@ -42,7 +42,6 @@ const Login = () => {
   function delay(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
-
   return (
     <div>
       <Row className="bg-white ">

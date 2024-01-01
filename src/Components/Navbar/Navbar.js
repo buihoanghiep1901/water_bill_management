@@ -1,51 +1,58 @@
 // @ts-nocheck
 import React from 'react'
-import { NavDropdown, Nav,Col, Row,Form,Navbar} from 'react-bootstrap'
+import { Dropdown, Nav,Col, Row,Form,Navbar} from 'react-bootstrap'
 import  "./navbar.css"
 import vamp from '../../assets/images/vamp.jpg'
+import { auth } from '../../config/firebase_config'
+import { signOut } from 'firebase/auth'
+import {useAuthState} from 'react-firebase-hooks/auth'
+import { useNavigate } from 'react-router-dom'
 function NavigateBar() {
+    const [user]=useAuthState(auth);
+  const Navigate=useNavigate();
+
+    const searching=()=>{
+
+    }
+    const signUserOut= async ()=>{
+        await signOut(auth)
+    }
   return (
-    <Navbar className="bg-white justify-content-between shadow  border-4 " id="navbar">
-        <Navbar.Brand href="#home">Dashboard</Navbar.Brand>
-                
-        <Navbar.Collapse id="basic-navbar-nav">
-            <Form inline>
-                <Row>
-                <Col xs="auto">
-                    <Form.Control
-                    type="text"
-                    placeholder="Search"
-                    className=" mr-sm-2"
-                    />
-                </Col>
-                </Row>
+    <>
+    <Navbar expand="md" className="bg-white justify-content-between shadow  " id="navbar">
+        <h4 className='w-md-25 ms-5 mb-0'>Dashboard</h4>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />        
+        <Navbar.Collapse id="basic-navbar-nav" className=' justify-content-around '>
+            <Form inline='true' className=' w-50'>
+                <Form.Control
+                        type="text"
+                        placeholder="Search"
+                        />
             </Form>
-            <Nav className="me-auto">
+            <Nav className="align-items-center flex-row">
                 <img src={vamp} alt="avatar" className='avatar' />
-                <h3>King Vamp</h3>
-                <NavDropdown title="drop" id="basic-nav-dropdown" className='text-danger '>
-                    <NavDropdown.Item href="#action/3.1" className='text-danger '>User Info</NavDropdown.Item>
-                    <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
-                    <NavDropdown.Divider />
-                    <NavDropdown.Item href="#action/3.4">
-                        Sign out
-                    </NavDropdown.Item>
-                </NavDropdown>
+                <h5 className=''>{user?.email}</h5>
+                <Dropdown>
+                    <Dropdown.Toggle variant="white" className='border-0' id="dropdown-basic">
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
+                        <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
+                        <hr />
+                        <Dropdown.Item href="" 
+                            onClick={()=>{
+                                signUserOut();
+                                Navigate("/");
+                                }}>
+                            Sign out
+                        </Dropdown.Item>
+                    </Dropdown.Menu>
+                    </Dropdown>
             </Nav>
-        </Navbar.Collapse>
-        <button
-            type="button"
-            class="btn btn-primary"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbar"
-            aria-pressed="false"
-            autocomplete="off"
-            aria-controls="basic-navbar-nav"
-        >
-            Button
-        </button>
-        
+        </Navbar.Collapse>    
     </Navbar>
+    <hr />
+    </>
   )
 }
 
