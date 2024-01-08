@@ -1,44 +1,32 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // @ts-nocheck
-import React, { useEffect } from 'react'
-import { Dropdown, Nav,Col, Row,Form,Navbar} from 'react-bootstrap'
+import React, { useEffect, useState } from 'react'
+import { Dropdown, Nav,Form,Navbar} from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 import vamp from '../../assets/images/vamp.jpg'
 import  "./navbar.css"
-import { auth,db } from '../../config/firebase_config'
-import { signOut } from 'firebase/auth'
-import { collection, doc, setDoc, query,where, getDocs, getDoc, limit } from "firebase/firestore"; 
+import { auth,userRef } from '../../config/firebase_config'
+import { signOut} from 'firebase/auth'
+import { query, getDocs,where} from "firebase/firestore"; 
 import {useAuthState} from 'react-firebase-hooks/auth'
 function NavigateBar() {
     const [user]=useAuthState(auth);
+    const [avatar, setAvatar]=useState("")
     const Navigate=useNavigate();
-
-   async function abc(){
-    const docRef = collection(db, "users");
-    const querySnapshot = await getDocs(query(docRef));
-    console.log(querySnapshot)
-    querySnapshot.forEach((doc) => {
-    console.log(doc.id, " => ", doc.data().avartar);
-    });
-    
-    // if (docSnap) {
-    //   console.log("Document data:", docSnap);
-    // } else {
-    //   // docSnap.data() will be undefined in this case
-    //   console.log("No such document!");
-    // }
+    const loadUrl= async ()=>{
+        
+        const querySnapshot = await getDocs(query(userRef, 
+        where('username','==',user?.email.split('@')[0])));
+        querySnapshot.forEach((doc)=>{
+            console.log(doc.data().avartar) ;
+            setAvatar(doc.data().avartar)
+        })
+        
    }
-   abc()
+    useEffect( ()=>{
 
-    // useEffect( () => {
-    //     async function test () {
-    //         const result= await  getDocs(collection(db,'users') );
-    //         console.log(result);
-    //     }
-
-    // });
-    // const searching=()=>{
-
-    // }
+        loadUrl()
+   },[])
     const signUserOut= async ()=>{
         await signOut(auth)
     }
@@ -55,7 +43,7 @@ function NavigateBar() {
                         />
             </Form>
             <Nav className="align-items-center flex-row">
-                <img src={vamp} alt="avatar" className='avatar' />
+                <img src={avatar? avatar: vamp} alt="avatar" className='avatar' />
                 <h5 className=''>{user?.email}</h5>
                 <Dropdown>
                     <Dropdown.Toggle variant="white" className='border-0' id="dropdown-basic">

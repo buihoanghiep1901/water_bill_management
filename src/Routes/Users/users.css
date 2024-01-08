@@ -1,0 +1,55 @@
+
+.toggle{
+    background-color: transparent;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  margin-top: 5px;
+}
+
+.active-page {
+  background-color: #2285e0;
+}
+.pill-status{
+  border: none;
+  color: black;
+  /* padding: 5px px; */
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 16px;
+  width: 50%;
+}
+.page-item {
+  height: 30px;
+  width: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border:gray 0.5px solid;
+  margin: 5px 3px;
+
+}
+.page-item a{
+  width: 100%;
+  text-align: center;
+}
+.page-item:hover{
+  background-color: antiquewhite;
+}
+
+.active-page:hover {
+  background-color: #2285e0;
+}
+
+.btn-modal{
+  background-color: #2285e0;
+  width: 10%;
+  margin: 0 89.5%;
+}

@@ -1,7 +1,7 @@
 
 // @ts-nocheck
 import React, { useState } from "react";
-import { signInWithEmailAndPassword , createUserWithEmailAndPassword} from "firebase/auth";
+import { signInWithEmailAndPassword} from "firebase/auth";
 import { Form, Button, Alert,Row, Col} from "react-bootstrap";
 import BackgroundImage from "../../assets/images/signin.jpg";
 import "./login.css";
@@ -25,14 +25,13 @@ const Login = () => {
     signInWithEmailAndPassword(auth, inputUsername, inputPassword)
       .then((userCredential) => {
         const user = userCredential.user;
-        console.log(auth)
-        console.log(user);
+        console.log('Login success, user is'+user);
         Navigate("/main")
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        console.log(errorCode + errorMessage)
+        console.log('This is err from Login: '+errorCode + errorMessage)
         error&&setShow(true);
       });
 

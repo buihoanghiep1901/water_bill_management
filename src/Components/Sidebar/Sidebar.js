@@ -7,7 +7,7 @@ import {NavLink} from 'react-router-dom';
 
 function Sidebar() {
   return (
-    <Navbar expand="lg" id="sidebar" className='vh-100 py-0' >
+    <Navbar expand="lg"  className='vh-100 py-0' >
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           
           <Navbar.Collapse id="basic-navbar-nav" className='flex-column h-100 sidebar border-4' >
@@ -16,7 +16,8 @@ function Sidebar() {
             <Nav className="mt-5 w-100  d-flex flex-column text-white ">
               {SidebarData.map((val,key)=>{
                 return(
-                  <NavLink 
+                  <NavLink
+                    key={key}
                     to={val.link} 
                     className={
                       `p-2 mb-2 fs-5 text-white d-flex flex-row sidebar__link 
