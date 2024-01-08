@@ -1,3 +1,7 @@
+# LOGIN INFO
+ACC: jbalchin2m@gmail.com
+PASS: iY0|J2WUZ9ijxQ
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
