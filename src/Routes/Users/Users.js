@@ -1,7 +1,7 @@
 // @ts-nocheck
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { userRef } from '../../config/firebase_config'
-import {getDocs, query,limit} from "firebase/firestore"; 
+import {getDocs, query as clause, doc, addDoc, deleteDoc, where, onSnapshot, orderBy, query} from "firebase/firestore"; 
 import { Table, Button,Modal,Form} from 'react-bootstrap';
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FcPrevious , FcNext} from "react-icons/fc";
@@ -16,31 +16,72 @@ function Users() {
     const rowPerPage=10
 
     const [show, setShow]=useState(false)
-    const[dataModal, setDataModal]=useState({})
+    const [reload, setReload]=useState(false)
+    const [modalData, setModalData]=useState({})
+    const [fullname, setFullname]=useState("")
+    const [email, setEmail]=useState("")
+    const [pass, setPass]=useState("")
+    const [address, setAddress]=useState("")
+    const [phone, setPhone]=useState("")
+    const [status, setStatus]=useState(true)
+    const [file, setFile]=useState("")
+    
     
     useEffect(()=>{
         const loadData= async ()=>{
-            let i=0
-            const queryDoc= await getDocs(query(userRef))
+            const queryDoc= await getDocs(clause(userRef, orderBy('date_updated','desc')))
             const userList=queryDoc.docs.map((doc)=>{
-                  i++
-                  console.log(`${i} `+doc.data().username)
+                  // console.log(`${i} `+doc.data().username)
                   return doc.data()
               })
               setUserList(userList);
               setTotalPages(Math.ceil(userList.length/rowPerPage))
         }
         loadData()
-    },[])
+    },[reload])
     const rowStart=currentPage * rowPerPage;
     const rowEnd=rowStart + rowPerPage
     const subList=userList.slice(rowStart,rowEnd);
-    console.log(`row start ${rowStart}, ${rowEnd}: `+subList)
+    // console.log(`row start ${rowStart}, ${rowEnd}: `+subList)
 
+    const docData = {
+      full_name:fullname,
+      email: email,
+      phone: phone,
+      password: pass,
+      date_created:  new Date().toJSON().slice(0, 10),
+      date_updated:  new Date().toJSON().slice(0, 10),
+      address: address,
+      avartar: file,
+      status: status==="1" ? true:false,
+    };
+    const handleCreateUser= async ()=>{
+      await addDoc(userRef,docData);
+      setShow(false);
+      setModalData({})
+      console.log(!reload)
+      setReload(!reload)
+    }
+
+    const handleUpdateUser= async(user)=>{
+      setModalData(user)
+      setShow(true);
+
+    }
+
+    const deleteUser= async (user)=>{      
+      const query= await getDocs(clause(userRef, where('email','==',user.email)))
+      query.docs.map(async (data)=>{
+            console.log('doc id: '+data.id)
+            await deleteDoc(doc(userRef,data.id))
+        })
+        console.log(!reload)
+        setReload(!reload)
+    }
   return (
     <>
       
-      <Button className='btn btn-primary btn-modal' onClick={() => setShow(true)}>
+      <Button className='btn-modal' onClick={() => setShow(true)}>
         Add user
       </Button>
       <Table striped bordered hover className='my-2' >
@@ -67,9 +108,9 @@ function Users() {
                   <BsThreeDotsVertical />
                 </button>
                 <ul class="dropdown-menu text-center align-middle p-0">
-                  <li>Detail</li>
+                  <li onClick={()=>handleUpdateUser(user)}>Detail</li>
                   <hr className='m-0' />
-                  <li>Delete</li>
+                  <li onClick={()=>deleteUser(user)} >Delete</li>
                 </ul>
               </div>
               }
@@ -94,7 +135,7 @@ function Users() {
       <Modal
         scrollable
         show={show}
-        onHide={() => setShow(false)}
+        onHide={() => {setShow(false); setModalData({})}}
         dialogClassName="modal-90w"
         aria-labelledby="example-custom-modal-styling-title"
       >
@@ -111,7 +152,8 @@ function Users() {
                 type="text"
                 placeholder="ng van A"
                 name='fullname'
-                
+                defaultValue={modalData?.full_name}
+                onChange={e=>setFullname(e.target.value)}
                 
               />
             </Form.Group>
@@ -122,6 +164,9 @@ function Users() {
                 type="email"
                 placeholder="name@example.com"
                 name='email'
+                defaultValue={modalData?.email}
+                onChange={e=>setEmail(e.target.value)}
+
               />
             </Form.Group>
 
@@ -131,15 +176,19 @@ function Users() {
                 type="password"
                 placeholder="Enter your pass"
                 name='pass'
+                defaultValue={modalData?.password}
+                onChange={e=>setPass(e.target.value)}
               />
             </Form.Group>
 
             <Form.Group className="mb-3" >
               <Form.Label>Phone</Form.Label>
               <Form.Control
-                type="number"
-                placeholder="0123456789"
+                type="text"
+                placeholder="0123456"
                 name='phone'
+                defaultValue={modalData?.phone}
+                onChange={e=>setPhone(e.target.value)}
               />
             </Form.Group>
           
@@ -149,10 +198,15 @@ function Users() {
                 type="text"
                 placeholder="1 Dai Co Viet"
                 name='address'
+                defaultValue={modalData?.address}
+                onChange={e=>setAddress(e.target.value)}
               />
             </Form.Group>
 
-            <Form.Select  name='status' aria-label="Default select example">
+            <Form.Select 
+              onChange={e=>setStatus(e.target.value)} 
+              name='status'
+              defaultValue={modalData?.status? 1:2}>
               <option>Choose Status </option>
               <option value="1">Active</option>
               <option value="2">Inactive</option>
@@ -163,6 +217,8 @@ function Users() {
               <Form.Control
                 type="file"
                 name='avatar'
+                // value={modalData?.avartar}
+                onChange={e=>setFile(e.target.value)}
               />
             </Form.Group>
           </Form>
@@ -171,8 +227,8 @@ function Users() {
           <Button variant="secondary" onClick={() => setShow(false)}>
             Close
           </Button>
-          <Button type='submit' onClick={() => setShow(false)}>
-            Save Changes
+          <Button type='submit' onClick={() => handleCreateUser()}>
+            Submit
           </Button>
         </Modal.Footer>
       </Modal>
