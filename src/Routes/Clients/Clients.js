@@ -1,41 +1,35 @@
 // @ts-nocheck
-import React, { useEffect ,useState } from 'react'
-import { userRef } from '../../config/firebase_config'
-import {getDocs, query as clause, doc, addDoc, deleteDoc, where, onSnapshot, orderBy, query, updateDoc} from "firebase/firestore"; 
-import { Table, Button,Modal,Form} from 'react-bootstrap';
+import React, { useEffect ,useState ,useContext} from 'react'
+import { clientRef } from '../../config/firebase_config'
+import {getDocs, query as clause, doc,  deleteDoc, orderBy} from "firebase/firestore"; 
+import { Table, Button} from 'react-bootstrap';
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FcPrevious , FcNext} from "react-icons/fc";
 import ReactPaginate from 'react-paginate';
-import { clientRef } from '../../config/firebase_config';
+import CreateClient from '../../Components/Client/CreateClient';
+import UpdateClient from '../../Components/Client/UpdateClient';
+import AppContext from '../../Context/Context';
 import '../Users/users.css'
 
 // import {useAuthState} from 'react-firebase-hooks/auth'
 function Clients() {
+    const {reload,setShowCreate,setReload, setShowUpdate}=useContext(AppContext)
+    
     const [clientList, setClientList]=useState([]);
+    const [currClient, setCurrClient]=useState({});
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const rowPerPage=10
 
-    const [show, setShow]=useState(false)
-    const [reload, setReload]=useState(false)
-    const [modalData, setModalData]=useState({})
-    const [fullname, setFullname]=useState("")
-    const [email, setEmail]=useState("")
-    const [address, setAddress]=useState("")
-    const [phone, setPhone]=useState("")
-    const [firstRead, setFirstRead]=useState("")
-    const [status, setStatus]=useState(true)
-    const [category, setCategory]=useState(true)
-    
-    const[chooseHandle, setChooseHandle]=useState(false)
-    
+       
     useEffect(()=>{
         const loadData= async ()=>{
-            const queryDoc= await getDocs(clause(clientRef, orderBy('date_updated','desc')))
+                  console.log(`star load data in update `)
+            const queryDoc= await getDocs(clause(clientRef, orderBy('uid')))
             const clientList=queryDoc.docs.map((doc)=>{
-                  // console.log(`${i} `+doc.data().clientname)
                   return doc.data()
               })
+              console.log(`END load data in update `)
               setClientList(clientList);
               setTotalPages(Math.ceil(clientList.length/rowPerPage))
         }
@@ -46,55 +40,14 @@ function Clients() {
     const subList=clientList.slice(rowStart,rowEnd);
     // console.log(`row start ${rowStart}, ${rowEnd}: `+subList)
 
-    const docData = {
-      uid: Date.now(),
-      fullname:fullname,
-      email: email,
-      phone: phone,
-      firstreading:firstRead, 
-      date_created:  new Date().toJSON().slice(0, 10),
-      date_updated:  new Date().toJSON().slice(0, 10),
-      address: address,
-      status: status =="1" ? true:false,
-      category: category =="1" ? true:false,
-    };
-    const handleCreateClient= async ()=>{
-      await addDoc(clientRef,docData);
-      setShow(false);
-      setReload(!reload)
-      setModalData({})
-    }
-
-    const importClient= async(client)=>{
-      setModalData(client)
-      setShow(true);
-      setChooseHandle(true)
-
-    }
-
-    const handleUpdateClient= async ()=>{
-      const query= await getDocs(clause(clientRef, where('email','==',docData.email)))
-      query.docs.map(async (data)=>{
-            console.log('doc id: '+data.id)
-            await updateDoc(doc(clientRef,data.id),docData)
-        })
-      setShow(false);
-      setReload(!reload)
-      setModalData({})
-    }
-
     const deleteClient= async (client)=>{      
-      const query= await getDocs(clause(clientRef, where('email','==',client.email)))
-      query.docs.map(async (data)=>{
-            console.log('doc id: '+data.id)
-            await deleteDoc(doc(clientRef,data.id))
-        })
-        setReload(!reload)
+      await deleteDoc(doc(clientRef,client.uid))
+      setReload(!reload)
     }
   return (
     <>
       
-      <Button className='btn-modal' onClick={() => {setShow(true);setChooseHandle(false)}}>
+      <Button className='btn-modal' onClick={() => {setShowCreate(true)}}>
         Add client
       </Button>
       <Table striped bordered hover className='my-2' >
@@ -121,7 +74,14 @@ function Clients() {
                   <BsThreeDotsVertical />
                 </button>
                 <ul class="dropdown-menu text-center align-middle p-0">
-                  <li onClick={()=>{importClient(client); setChooseHandle(true)}}>Detail</li>
+                  <li onClick={()=>{
+                    console.log('START SET CURR CLIENT: '+client);
+                    setCurrClient(client);
+                    setShowUpdate(true);
+                    console.log('END CURR CLIENT: '+client);
+                  }}>
+                    Detail
+                  </li>
                   <hr className='m-0' />
                   <li onClick={()=>deleteClient(client)} >Delete</li>
                 </ul>
@@ -145,108 +105,8 @@ function Clients() {
           previousLabel={<FcPrevious />}
           pageRangeDisplayed={3}
       />
-      <Modal
-        scrollable
-        show={show}
-        onHide={() => {setShow(false); setModalData({})}}
-        dialogClassName="modal-90w"
-        aria-labelledby="example-custom-modal-styling-title"
-      >
-        <Modal.Header closeButton>
-          <Modal.Title id="example-custom-modal-styling-title">
-            Add and update client
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group className="mb-3" >
-              <Form.Label>Full name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="ng van A"
-                name='fullname'
-                defaultValue={modalData?.fullname}
-                onChange={e=>setFullname(e.target.value)}
-                
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" >
-              <Form.Label>Email address</Form.Label>
-              <Form.Control
-                type="email"
-                placeholder="name@example.com"
-                name='email'
-                defaultValue={modalData?.email}
-                onChange={e=>setEmail(e.target.value)}
-
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" >
-              <Form.Label>Phone</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="0123456"
-                name='phone'
-                defaultValue={modalData?.phone}
-                onChange={e=>setPhone(e.target.value)}
-              />
-            </Form.Group>
-          
-            <Form.Group className="mb-3" >
-              <Form.Label>address</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="1 Dai Co Viet"
-                name='address'
-                defaultValue={modalData?.address}
-                onChange={e=>setAddress(e.target.value)}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" >
-              <Form.Label>First reading</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="8450.6"
-                name='first_read'
-                defaultValue={modalData?.firstreading}
-                onChange={e=>setFirstRead(e.target.value)}
-              />
-            </Form.Group>
-
-            <Form.Select
-              className="mb-3" 
-              onChange={e=>setStatus(e.target.value)} 
-              name='status'
-              defaultValue={modalData?.status? 1:2}>
-              <option>Choose Status </option>
-              <option value="1">Active</option>
-              <option value="2">Inactive</option>
-            </Form.Select>
-            
-            <Form.Select
-              onChange={e=>setCategory(e.target.value)} 
-              name='status'
-              defaultValue={modalData?.category? 1:2}>
-              <option>Choose Category </option>
-              <option value="1">Residential</option>
-              <option value="2">Business</option>
-            </Form.Select>
-
-            
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShow(false)}>
-            Close
-          </Button>
-          <Button type='submit' onClick={() => {chooseHandle? handleUpdateClient(): handleCreateClient()}}>
-            Submit
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <CreateClient/>
+      <UpdateClient client={currClient}/>
     </>
 
   )

@@ -1,29 +1,26 @@
 // @ts-nocheck
 import React, {useContext, useState } from 'react'
-import { userRef } from '../../config/firebase_config'
-import {doc, setDoc, updateDoc} from "firebase/firestore"; 
+import { clientRef } from '../../config/firebase_config'
+import {doc, setDoc} from "firebase/firestore"; 
 import {Button,Modal,Form} from 'react-bootstrap';
 import currentDate from '../../utils/currentDate';
 import AppContext from '../../Context/Context';
-import './Modal.css'
-function UpdateUser(prop) {
+function UpdateClient(prop) {
     const {showUpdate,reload,setShowUpdate,setReload}=useContext(AppContext)
     
-    const [uid,setUid]=useState("")   
     const [fullname, setFullname]=useState("")
     const [email, setEmail]=useState("")
+    const [firstRead, setFirstRead]=useState(0)
     const [phone, setPhone]=useState("")
-    const [pass, setPass]=useState("")
     const [address, setAddress]=useState("")
     const [status, setStatus]=useState(true)
-    const [file, setFile]=useState("")
-    console.log('prop '+JSON.stringify(prop))
-    console.log('prop uid '+uid +' ')
+    const [category, setCategory]=useState(true)
+    console.log('prop update '+JSON.stringify(prop))
 
-    const checkType=()=>{
-        if (typeof(status)=='boolean') {
-            return status
-        }else if(status==="1"){
+    const checkType=(prop)=>{
+        if (typeof(prop)=='boolean') {
+            return prop
+        }else if(prop==="1"){
             return true;
         }else{
             return false;
@@ -31,14 +28,14 @@ function UpdateUser(prop) {
     }
 
     const docData = {
-      uid:  uid===""? prop.user.uid: uid ,
-      full_name:fullname ==="" ? prop.user.full_name : fullname,
-      // email: email,
-      phone: phone===''? prop.user.phone: phone ,
-      password: pass ===""? prop.user.password : pass,
-      address: address===""? prop.user.address : address,
-      avartar: file===""? prop.user.avartar : file,
-      status: checkType(),
+      uid:  prop.client.uid,
+      fullname:fullname ==="" ? prop.client.fullname : fullname,
+      email: email===""? prop.client.email : email,
+      phone: phone===''? prop.client.phone: phone ,
+      firstreading: firstRead ===""? prop.client.password : firstRead,
+      address: address===""? prop.client.address : address,
+      category: checkType(category),
+      status: checkType(status),
       date_created:  currentDate(),
       date_updated:  currentDate(),
     };
@@ -47,16 +44,16 @@ function UpdateUser(prop) {
       setFullname('')
       setEmail('')
       setPhone('')
-      setPass('')
+      setFirstRead('')
       setAddress('')
-      setFile('')
       setStatus(true)
+      setCategory(true)
 
     }
 
-    const handleUpdateUser= async ()=>{
-        console.log('update user doc : '+ JSON.stringify(docData))  
-        await setDoc(doc(userRef,prop.user.uid),docData)
+    const handleUpdateclient= async ()=>{
+        console.log('update client doc : '+ JSON.stringify(docData))  
+        await setDoc(doc(clientRef,prop.client.uid),docData)
         setShowUpdate(false);
         setReload(!reload)
         resetData()
@@ -72,7 +69,7 @@ function UpdateUser(prop) {
       >
         <Modal.Header closeButton>
           <Modal.Title id="example-custom-modal-styling-title">
-            Update User
+            Update client
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -83,7 +80,7 @@ function UpdateUser(prop) {
                 type="text"
                 placeholder="ng van A"
                 name='fullname'
-                defaultValue={prop.user.full_name}
+                defaultValue={prop.client.fullname}
                 onChange={e=>setFullname(e.target.value)}
                 
               />
@@ -92,23 +89,24 @@ function UpdateUser(prop) {
             <Form.Group className="mb-3" >
               <Form.Label>Email address</Form.Label>
               <Form.Control
+                required
                 type="email"
                 placeholder="name@example.com"
                 name='email'
-                defaultValue={prop.user.email}
+                defaultValue={prop.client.email}
                 onChange={e=>setEmail(e.target.value)}
 
               />
             </Form.Group>
 
             <Form.Group className="mb-3" >
-              <Form.Label>Password</Form.Label>
+              <Form.Label>First Read</Form.Label>
               <Form.Control
-                type="password"
-                placeholder="Enter your pass"
+                type="text"
+                placeholder="3636.6"
                 name='pass'
-                defaultValue={prop.user.password}
-                onChange={e=>setPass(e.target.value)}
+                defaultValue={prop.client.firstreading}
+                onChange={e=>setFirstRead(e.target.value)}
               />
             </Form.Group>
 
@@ -118,7 +116,7 @@ function UpdateUser(prop) {
                 type="text"
                 placeholder="0123456"
                 name='phone'
-                defaultValue={prop.user.phone}
+                defaultValue={prop.client.phone}
                 onChange={e=>setPhone(e.target.value)}
               />
             </Form.Group>
@@ -129,36 +127,37 @@ function UpdateUser(prop) {
                 type="text"
                 placeholder="1 Dai Co Viet"
                 name='address'
-                defaultValue={prop.user.address}
+                defaultValue={prop.client.address}
                 onChange={e=>setAddress(e.target.value)}
               />
             </Form.Group>
 
-            <Form.Select 
+            <Form.Select
+              className='mb-3'
               onChange={e=>setStatus(e.target.value)} 
               name='status'
-              defaultValue={prop.user.status? 1: 2}>
+              defaultValue={prop.client.status? 1: 2}>
               <option>Choose Status </option>
               <option value="1">Active</option>
               <option value="2">Inactive</option>
             </Form.Select>
 
-            <Form.Group className="mb-3" >
-              <Form.Label>Avatar</Form.Label>
-              <Form.Control
-                type="file"
-                name='avatar'
-                // value={modalData?.avartar}
-                onChange={e=>setFile(e.target.value)}
-              />
-            </Form.Group>
+            <Form.Select 
+              className='mb-3'
+              onChange={e=>setCategory(e.target.value)} 
+              name='category'
+              defaultValue={prop.client.category? 1: 2}>
+              <option>Choose Category </option>
+              <option value="1">Resident</option>
+              <option value="2">Business</option>
+            </Form.Select>
           </Form>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => {setShowUpdate(false)}}>
             Close
           </Button>
-          <Button type='submit' onClick={() =>{handleUpdateUser()}}>
+          <Button type='submit' onClick={() =>{handleUpdateclient()}}>
             Submit
           </Button>
         </Modal.Footer>
@@ -166,4 +165,4 @@ function UpdateUser(prop) {
     </>
   )
 }
-export default UpdateUser
+export default UpdateClient

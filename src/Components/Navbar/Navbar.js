@@ -13,18 +13,17 @@ function NavigateBar() {
     const [user]=useAuthState(auth);
     const [avatar, setAvatar]=useState("")
     const Navigate=useNavigate();
-    const loadUrl= async ()=>{
-        
-        const querySnapshot = await getDocs(query(userRef, 
-        where('username','==',user?.email.split('@')[0])));
-        querySnapshot.forEach((doc)=>{
-            console.log(doc.data().avartar) ;
-            setAvatar(doc.data().avartar)
-        })
-        
-   }
+    
     useEffect( ()=>{
-
+        const loadUrl= async ()=>{
+            console.log('avatar: '+user.email)     
+            const querySnapshot = await getDocs(query(userRef, 
+            where('username','==',user?.email.split('@')[0])));
+            querySnapshot.forEach((doc)=>{
+                console.log(doc.data().avartar) ;
+                setAvatar(doc.data().avartar)
+            })
+       }
         loadUrl()
    },[])
     const signUserOut= async ()=>{

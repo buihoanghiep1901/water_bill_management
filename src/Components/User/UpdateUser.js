@@ -1,15 +1,14 @@
 // @ts-nocheck
 import React, {useContext, useState } from 'react'
 import { userRef } from '../../config/firebase_config'
-import {doc, setDoc, updateDoc} from "firebase/firestore"; 
+import {doc, setDoc,} from "firebase/firestore"; 
 import {Button,Modal,Form} from 'react-bootstrap';
 import currentDate from '../../utils/currentDate';
 import AppContext from '../../Context/Context';
 import './Modal.css'
 function UpdateUser(prop) {
     const {showUpdate,reload,setShowUpdate,setReload}=useContext(AppContext)
-    
-    const [uid,setUid]=useState("")   
+     
     const [fullname, setFullname]=useState("")
     const [email, setEmail]=useState("")
     const [phone, setPhone]=useState("")
@@ -17,8 +16,8 @@ function UpdateUser(prop) {
     const [address, setAddress]=useState("")
     const [status, setStatus]=useState(true)
     const [file, setFile]=useState("")
-    console.log('prop '+JSON.stringify(prop))
-    console.log('prop uid '+uid +' ')
+    console.log('prop user'+JSON.stringify(prop))
+
 
     const checkType=()=>{
         if (typeof(status)=='boolean') {
@@ -31,9 +30,9 @@ function UpdateUser(prop) {
     }
 
     const docData = {
-      uid:  uid===""? prop.user.uid: uid ,
+      uid:prop.user.uid ,
       full_name:fullname ==="" ? prop.user.full_name : fullname,
-      // email: email,
+      // email: email===""? prop.client.email : email,
       phone: phone===''? prop.user.phone: phone ,
       password: pass ===""? prop.user.password : pass,
       address: address===""? prop.user.address : address,

@@ -1,32 +1,32 @@
 // @ts-nocheck
 import React, {useContext, useState } from 'react'
-import { userRef } from '../../config/firebase_config'
+import { clientRef } from '../../config/firebase_config'
 import {doc, setDoc} from "firebase/firestore"; 
 import {Button,Modal,Form} from 'react-bootstrap';
 import currentDate from '../../utils/currentDate';
 import AppContext from '../../Context/Context';
-import '../User/Modal.css'
-function CreateUser() {
+
+function CreateClient() {
 
     const {showCreate,reload,setShowCreate,setReload}=useContext(AppContext)
      
     const [fullname, setFullname]=useState("")
     const [email, setEmail]=useState("")
-    const [phone, setPhone]=useState("")
-    const [pass, setPass]=useState("")
     const [address, setAddress]=useState("")
+    const [phone, setPhone]=useState("")
+    const [firstRead, setFirstRead]=useState("")
     const [status, setStatus]=useState(true)
-    const [file, setFile]=useState("")
+    const [category, setCategory]=useState(true)
 
     const docData = {
       uid:   String(Date.now()) ,
-      full_name:fullname,
+      fullname:fullname,
       email: email,
       phone: phone,
-      password: pass,
+      firstreading:firstRead,
       address: address,
-      avartar: file,
       status: status==="1" ? true:false,
+      category: category==="1" ? true:false,
       date_created:  currentDate(),
       date_updated:  currentDate(),
     };
@@ -35,17 +35,17 @@ function CreateUser() {
       setFullname('')
       setEmail('')
       setPhone('')
-      setPass('')
       setAddress('')
-      setFile('')
+      setFirstRead('')
+      setCategory(true)
       setStatus(true)
 
     }
 
-    const handleCreateUser= async ()=>{
-      console.log('create user doc : '+ JSON.stringify(docData))
-      // console.log('create user modal : '+ JSON.stringify(modalData))
-      await setDoc(doc(userRef,docData.uid),docData);
+    const handleCreateclient= async ()=>{
+      console.log('create client doc : '+ JSON.stringify(docData))
+      // console.log('create client modal : '+ JSON.stringify(modalData))
+      await setDoc(doc(clientRef,docData.uid),docData);
       resetData()
       setShowCreate(false);
       setReload(!reload)
@@ -61,7 +61,7 @@ function CreateUser() {
       >
         <Modal.Header closeButton>
           <Modal.Title id="example-custom-modal-styling-title">
-            Add new User
+            Add new Client
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -80,21 +80,12 @@ function CreateUser() {
             <Form.Group className="mb-3" >
               <Form.Label>Email address</Form.Label>
               <Form.Control
+                required
                 type="email"
                 placeholder="name@example.com"
                 name='email'
                 onChange={e=>setEmail(e.target.value)}
 
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" >
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="Enter your pass"
-                name='pass'
-                onChange={e=>setPass(e.target.value)}
               />
             </Form.Group>
 
@@ -118,7 +109,18 @@ function CreateUser() {
               />
             </Form.Group>
 
-            <Form.Select 
+            <Form.Group className="mb-3" >
+              <Form.Label>First Read</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter your pass"
+                name='pass'
+                onChange={e=>setFirstRead(e.target.value)}
+              />
+            </Form.Group>
+
+            <Form.Select
+              className='mb-3'
               onChange={e=>setStatus(e.target.value)} 
               name='status'>
               <option>Choose Status </option>
@@ -126,22 +128,22 @@ function CreateUser() {
               <option value="2">Inactive</option>
             </Form.Select>
 
-            <Form.Group className="mb-3" >
-              <Form.Label>Avatar</Form.Label>
-              <Form.Control
-                type="file"
-                name='avatar'
-                // value={modalData?.avartar}
-                onChange={e=>setFile(e.target.value)}
-              />
-            </Form.Group>
+            <Form.Select
+              className='mb-3'
+              onChange={e=>setCategory(e.target.value)} 
+              name='status'>
+              <option>Choose Category </option>
+              <option value="1">Resident</option>
+              <option value="2">Business</option>
+            </Form.Select>
+
           </Form>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowCreate(false)}>
             Close
           </Button>
-          <Button type='submit' onClick={() =>{handleCreateUser()}}>
+          <Button type='submit' onClick={() =>{handleCreateclient()}}>
             Submit
           </Button>
         </Modal.Footer>
@@ -149,4 +151,4 @@ function CreateUser() {
     </>
   )
 }
-export default CreateUser
+export default CreateClient
