@@ -1,37 +1,30 @@
 // @ts-nocheck
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { userRef } from '../../config/firebase_config'
-import {getDocs, query as clause, doc, addDoc, deleteDoc, where, onSnapshot, orderBy, query} from "firebase/firestore"; 
-import { Table, Button,Modal,Form} from 'react-bootstrap';
+import {getDocs, query as clause,  deleteDoc,doc, orderBy} from "firebase/firestore"; 
+import { Table, Button,} from 'react-bootstrap';
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FcPrevious , FcNext} from "react-icons/fc";
 import ReactPaginate from 'react-paginate';
+import AppContext from '../../Context/Context';
+import UpdateUser from '../../Components/User/UpdateUser';
+import CreateUser from '../../Components/User/CreateUser';
 import './users.css'
 
 // import {useAuthState} from 'react-firebase-hooks/auth'
 function Users() {
+  const {reload,setShowUpdate, setShowCreate,setReload}=useContext(AppContext)
+
     const [userList, setUserList]=useState([]);
+    const [currUser, setCurrUser]=useState({});
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const rowPerPage=10
-
-    const [show, setShow]=useState(false)
-    const [reload, setReload]=useState(false)
-    const [modalData, setModalData]=useState({})
-    const [fullname, setFullname]=useState("")
-    const [email, setEmail]=useState("")
-    const [pass, setPass]=useState("")
-    const [address, setAddress]=useState("")
-    const [phone, setPhone]=useState("")
-    const [status, setStatus]=useState(true)
-    const [file, setFile]=useState("")
-    
     
     useEffect(()=>{
         const loadData= async ()=>{
-            const queryDoc= await getDocs(clause(userRef, orderBy('date_updated','desc')))
+            const queryDoc= await getDocs(clause(userRef, orderBy('uid')))
             const userList=queryDoc.docs.map((doc)=>{
-                  // console.log(`${i} `+doc.data().username)
                   return doc.data()
               })
               setUserList(userList);
@@ -39,49 +32,20 @@ function Users() {
         }
         loadData()
     },[reload])
+
     const rowStart=currentPage * rowPerPage;
     const rowEnd=rowStart + rowPerPage
     const subList=userList.slice(rowStart,rowEnd);
-    // console.log(`row start ${rowStart}, ${rowEnd}: `+subList)
-
-    const docData = {
-      full_name:fullname,
-      email: email,
-      phone: phone,
-      password: pass,
-      date_created:  new Date().toJSON().slice(0, 10),
-      date_updated:  new Date().toJSON().slice(0, 10),
-      address: address,
-      avartar: file,
-      status: status==="1" ? true:false,
-    };
-    const handleCreateUser= async ()=>{
-      await addDoc(userRef,docData);
-      setShow(false);
-      setModalData({})
-      console.log(!reload)
+  
+    const deleteUser= async (user)=>{ 
+      console.log('update user modal : '+ JSON.stringify(user))
+      await deleteDoc(doc(userRef,user.uid))
       setReload(!reload)
-    }
-
-    const handleUpdateUser= async(user)=>{
-      setModalData(user)
-      setShow(true);
-
-    }
-
-    const deleteUser= async (user)=>{      
-      const query= await getDocs(clause(userRef, where('email','==',user.email)))
-      query.docs.map(async (data)=>{
-            console.log('doc id: '+data.id)
-            await deleteDoc(doc(userRef,data.id))
-        })
-        console.log(!reload)
-        setReload(!reload)
     }
   return (
     <>
       
-      <Button className='btn-modal' onClick={() => setShow(true)}>
+      <Button className='btn-modal' onClick={() => {setShowCreate(true)}}>
         Add user
       </Button>
       <Table striped bordered hover className='my-2' >
@@ -97,18 +61,24 @@ function Users() {
         <tbody>
           {
           subList.map((user)=>{        
-            return <tr>
+            return <tr key={user.uid}>
             <td className='text-center align-middle'>{user.full_name}</td>
             <td className='text-center align-middle'>{user.phone}</td>
             <td className='text-center align-middle'>{user.date_created}</td>
             <td className='text-center align-middle'><div className="pill-status" style={user.status ? {backgroundColor: "lightgreen"}:{backgroundColor: "lightcoral"}}>{user.status ? 'Active':'Inactive'}</div></td>
             <td>{
               <div className='text-center p-0' >
-                <button class="btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <button className="btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                   <BsThreeDotsVertical />
                 </button>
-                <ul class="dropdown-menu text-center align-middle p-0">
-                  <li onClick={()=>handleUpdateUser(user)}>Detail</li>
+                <ul className="dropdown-menu text-center align-middle p-0">
+                  <li onClick={()=>{
+                      setCurrUser(user)
+                      setShowUpdate(true);
+                      console.log('show update in user: '+user);
+                    }}>
+                      Detail
+                  </li>
                   <hr className='m-0' />
                   <li onClick={()=>deleteUser(user)} >Delete</li>
                 </ul>
@@ -132,106 +102,8 @@ function Users() {
           previousLabel={<FcPrevious />}
           pageRangeDisplayed={3}
       />
-      <Modal
-        scrollable
-        show={show}
-        onHide={() => {setShow(false); setModalData({})}}
-        dialogClassName="modal-90w"
-        aria-labelledby="example-custom-modal-styling-title"
-      >
-        <Modal.Header closeButton>
-          <Modal.Title id="example-custom-modal-styling-title">
-            Add and update User
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group className="mb-3" >
-              <Form.Label>Full name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="ng van A"
-                name='fullname'
-                defaultValue={modalData?.full_name}
-                onChange={e=>setFullname(e.target.value)}
-                
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" >
-              <Form.Label>Email address</Form.Label>
-              <Form.Control
-                type="email"
-                placeholder="name@example.com"
-                name='email'
-                defaultValue={modalData?.email}
-                onChange={e=>setEmail(e.target.value)}
-
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" >
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="Enter your pass"
-                name='pass'
-                defaultValue={modalData?.password}
-                onChange={e=>setPass(e.target.value)}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" >
-              <Form.Label>Phone</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="0123456"
-                name='phone'
-                defaultValue={modalData?.phone}
-                onChange={e=>setPhone(e.target.value)}
-              />
-            </Form.Group>
-          
-            <Form.Group className="mb-3" >
-              <Form.Label>address</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="1 Dai Co Viet"
-                name='address'
-                defaultValue={modalData?.address}
-                onChange={e=>setAddress(e.target.value)}
-              />
-            </Form.Group>
-
-            <Form.Select 
-              onChange={e=>setStatus(e.target.value)} 
-              name='status'
-              defaultValue={modalData?.status? 1:2}>
-              <option>Choose Status </option>
-              <option value="1">Active</option>
-              <option value="2">Inactive</option>
-            </Form.Select>
-
-            <Form.Group className="mb-3" >
-              <Form.Label>Avatar</Form.Label>
-              <Form.Control
-                type="file"
-                name='avatar'
-                // value={modalData?.avartar}
-                onChange={e=>setFile(e.target.value)}
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShow(false)}>
-            Close
-          </Button>
-          <Button type='submit' onClick={() => handleCreateUser()}>
-            Submit
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <CreateUser/>
+      <UpdateUser user={currUser}/>
     </>
 
   )

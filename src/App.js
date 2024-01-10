@@ -1,5 +1,5 @@
 // @ts-nocheck
-import {useState, createContext} from 'react';
+import {useState, createContext, useContext} from 'react';
 import { BrowserRouter  as Router,Routes, Route } from 'react-router-dom';
 import {QueryClient,QueryClientProvider} from '@tanstack/react-query'
 // import Axios from 'axios';
@@ -13,11 +13,10 @@ import Users from './Routes/Users/Users'
 import Categories from './Routes/Categories/Categories'
 import Billings from './Routes/Billings/Billings'
 import Home from './Routes/Dashboard/Dashboard';
-
-export const AppContext=createContext();
+import AppContextProvider from './Context/AppContextProvioder';
 
 function App() {
-  const [username, setUserName]=useState('hoang hiep');
+  
   const client=new QueryClient({defaultOptions:{
     queries:{
       refetchOnWindowFocus: false,
@@ -27,7 +26,7 @@ function App() {
 
   return (
     <div className='App'>
-      <AppContext.Provider value={{username, setUserName}}>
+      <AppContextProvider >
         <QueryClientProvider client={client}>
           <IconContext.Provider value={{ className: "Icon" }}>
             <Router>
@@ -45,7 +44,7 @@ function App() {
             </Router>
           </IconContext.Provider>
         </QueryClientProvider>
-      </AppContext.Provider>
+      </AppContextProvider>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React, { useEffect ,useState } from 'react'
 import { userRef } from '../../config/firebase_config'
-import {getDocs, query as clause, doc, addDoc, deleteDoc, where, onSnapshot, orderBy, query} from "firebase/firestore"; 
+import {getDocs, query as clause, doc, addDoc, deleteDoc, where, onSnapshot, orderBy, query, updateDoc} from "firebase/firestore"; 
 import { Table, Button,Modal,Form} from 'react-bootstrap';
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FcPrevious , FcNext} from "react-icons/fc";
@@ -21,12 +21,13 @@ function Clients() {
     const [modalData, setModalData]=useState({})
     const [fullname, setFullname]=useState("")
     const [email, setEmail]=useState("")
-    const [pass, setPass]=useState("")
     const [address, setAddress]=useState("")
     const [phone, setPhone]=useState("")
+    const [firstRead, setFirstRead]=useState("")
     const [status, setStatus]=useState(true)
     const [category, setCategory]=useState(true)
     
+    const[chooseHandle, setChooseHandle]=useState(false)
     
     useEffect(()=>{
         const loadData= async ()=>{
@@ -46,28 +47,40 @@ function Clients() {
     // console.log(`row start ${rowStart}, ${rowEnd}: `+subList)
 
     const docData = {
+      uid: Date.now(),
       fullname:fullname,
       email: email,
       phone: phone,
-      password: pass,
+      firstreading:firstRead, 
       date_created:  new Date().toJSON().slice(0, 10),
       date_updated:  new Date().toJSON().slice(0, 10),
       address: address,
-      status: status==="1" ? true:false,
-      category: category==="1" ? true:false,
+      status: status =="1" ? true:false,
+      category: category =="1" ? true:false,
     };
     const handleCreateClient= async ()=>{
       await addDoc(clientRef,docData);
       setShow(false);
-      setModalData({})
-      console.log(!reload)
       setReload(!reload)
+      setModalData({})
     }
 
-    const handleUpdateClient= async(client)=>{
+    const importClient= async(client)=>{
       setModalData(client)
       setShow(true);
+      setChooseHandle(true)
 
+    }
+
+    const handleUpdateClient= async ()=>{
+      const query= await getDocs(clause(clientRef, where('email','==',docData.email)))
+      query.docs.map(async (data)=>{
+            console.log('doc id: '+data.id)
+            await updateDoc(doc(clientRef,data.id),docData)
+        })
+      setShow(false);
+      setReload(!reload)
+      setModalData({})
     }
 
     const deleteClient= async (client)=>{      
@@ -76,13 +89,12 @@ function Clients() {
             console.log('doc id: '+data.id)
             await deleteDoc(doc(clientRef,data.id))
         })
-        console.log(!reload)
         setReload(!reload)
     }
   return (
     <>
       
-      <Button className='btn-modal' onClick={() => setShow(true)}>
+      <Button className='btn-modal' onClick={() => {setShow(true);setChooseHandle(false)}}>
         Add client
       </Button>
       <Table striped bordered hover className='my-2' >
@@ -109,7 +121,7 @@ function Clients() {
                   <BsThreeDotsVertical />
                 </button>
                 <ul class="dropdown-menu text-center align-middle p-0">
-                  <li onClick={()=>handleUpdateClient(client)}>Detail</li>
+                  <li onClick={()=>{importClient(client); setChooseHandle(true)}}>Detail</li>
                   <hr className='m-0' />
                   <li onClick={()=>deleteClient(client)} >Delete</li>
                 </ul>
@@ -172,17 +184,6 @@ function Clients() {
             </Form.Group>
 
             <Form.Group className="mb-3" >
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="Enter your pass"
-                name='pass'
-                defaultValue={modalData?.password}
-                onChange={e=>setPass(e.target.value)}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" >
               <Form.Label>Phone</Form.Label>
               <Form.Control
                 type="text"
@@ -208,14 +209,15 @@ function Clients() {
               <Form.Label>First reading</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="1 Dai Co Viet"
+                placeholder="8450.6"
                 name='first_read'
                 defaultValue={modalData?.firstreading}
-                onChange={e=>setAddress(e.target.value)}
+                onChange={e=>setFirstRead(e.target.value)}
               />
             </Form.Group>
 
-            <Form.Select 
+            <Form.Select
+              className="mb-3" 
               onChange={e=>setStatus(e.target.value)} 
               name='status'
               defaultValue={modalData?.status? 1:2}>
@@ -224,7 +226,7 @@ function Clients() {
               <option value="2">Inactive</option>
             </Form.Select>
             
-            <Form.Select 
+            <Form.Select
               onChange={e=>setCategory(e.target.value)} 
               name='status'
               defaultValue={modalData?.category? 1:2}>
@@ -240,7 +242,7 @@ function Clients() {
           <Button variant="secondary" onClick={() => setShow(false)}>
             Close
           </Button>
-          <Button type='submit' onClick={() => handleCreateClient()}>
+          <Button type='submit' onClick={() => {chooseHandle? handleUpdateClient(): handleCreateClient()}}>
             Submit
           </Button>
         </Modal.Footer>
