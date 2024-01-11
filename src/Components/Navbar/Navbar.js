@@ -16,7 +16,7 @@ function NavigateBar() {
     
     useEffect( ()=>{
         const loadUrl= async ()=>{
-            console.log('avatar: '+user.email)     
+            console.log('avatar: '+user?.email)     
             const querySnapshot = await getDocs(query(userRef, 
             where('username','==',user?.email.split('@')[0])));
             querySnapshot.forEach((doc)=>{
