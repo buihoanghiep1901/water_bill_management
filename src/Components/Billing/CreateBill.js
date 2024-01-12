@@ -43,8 +43,8 @@ function CreateBill() {
       uid:   clientData.uid ,
       previous_read: preRead,
       current_read: currRead,
-      amount:currRead-preRead,
-      total:getTotal(currRead-preRead),
+      amount:Math.floor(currRead-preRead),
+      total:getTotal(Math.floor(currRead-preRead)),
       reading_date: readingDate,
       due_date: dueDate,
       status: status==="1" ? true:false,
@@ -62,10 +62,10 @@ function CreateBill() {
     }
 
     
-    const handleCreatebill= async ()=>{
+    const handleCreateBill= async ()=>{
       console.log('create bill doc : '+ JSON.stringify(docData))
       // console.log('create bill modal : '+ JSON.stringify(modalData))
-      await setDoc(doc(billRef,docData.uid),docData);
+      await setDoc(doc(billRef,docData.id),docData);
       resetData()
       setShowCreate(false);
       setReload(!reload)
@@ -144,7 +144,6 @@ function CreateBill() {
             </Form.Group>
 
             <div className='d-flex justify-content-between'>
-
                 <Form.Group className="mb-3" >
                 <Form.Label>Previous Number</Form.Label>
                 <Form.Control
@@ -152,7 +151,6 @@ function CreateBill() {
                     placeholder="456.36"
                     name='pre read'
                     onChange={e=>setPreRead(e.target.value)}
-
                 />
                 </Form.Group>
 
@@ -168,26 +166,25 @@ function CreateBill() {
             </div>
 
             <div className='d-flex justify-content-around'>
+              <Form.Group className="mb-3" >
+                <Form.Label>Amount </Form.Label>
+                <Form.Control
+                  type="number"
+                  placeholder="500.36"
+                  name='amount'
+                  value={docData.amount}
+                />
+              </Form.Group>
 
-            <Form.Group className="mb-3" >
-              <Form.Label>Amount </Form.Label>
-              <Form.Control
-                type="number"
-                placeholder="500.36"
-                name='amount'
-                value={currRead-preRead}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" >
-              <Form.Label>Total</Form.Label>
-              <Form.Control
-                type="number"
-                placeholder="500.36"
-                name='amount'
-                value={getTotal(currRead-preRead)}
-              />
-            </Form.Group>
+              <Form.Group className="mb-3" >
+                <Form.Label>Total</Form.Label>
+                <Form.Control
+                  type="number"
+                  placeholder="500.36"
+                  name='amount'
+                  value={docData.total}
+                />
+              </Form.Group>
             </div>
 
             <Form.Group className="mb-3" >
@@ -224,7 +221,7 @@ function CreateBill() {
           <Button variant="secondary" onClick={() => setShowCreate(false)}>
             Close
           </Button>
-          <Button type='submit' onClick={() =>{handleCreatebill()}}>
+          <Button type='submit' onClick={() =>{handleCreateBill()}}>
             Submit
           </Button>
         </Modal.Footer>

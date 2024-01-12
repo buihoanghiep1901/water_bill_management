@@ -1,0 +1,9 @@
+.category{
+    height: 75dvh;
+    display:flex ;
+    flex-direction: column;
+    justify-content: center;
+}
+.accordion{
+    --bs-accordion-btn-bg:#ADD9F4;
+}

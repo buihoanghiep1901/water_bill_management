@@ -1,0 +1,12 @@
+.dashboard{
+    height: 80dvh;
+}
+.card{
+    height: 15rem
+}
+
+.card__image {
+    height: 10.5rem;
+    background-color: red;
+
+  }

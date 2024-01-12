@@ -13,7 +13,7 @@ import './users.css'
 
 // import {useAuthState} from 'react-firebase-hooks/auth'
 function Users() {
-  const {reload,setShowUpdate, setShowCreate,setReload}=useContext(AppContext)
+    const {reload,setShowUpdate, setShowCreate,setReload}=useContext(AppContext)
 
     const [userList, setUserList]=useState([]);
     const [currUser, setCurrUser]=useState({});

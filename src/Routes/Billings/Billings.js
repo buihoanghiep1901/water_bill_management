@@ -1,13 +1,14 @@
 // @ts-nocheck
 import React, { useEffect, useState, useContext } from 'react'
 import { clientRef, billRef } from '../../config/firebase_config'
-import {getDocs,getDoc, query as clause,  deleteDoc,doc, orderBy} from "firebase/firestore"; 
+import {getDocs,query as clause,  deleteDoc,doc, orderBy} from "firebase/firestore"; 
 import { Table, Button,} from 'react-bootstrap';
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FcPrevious , FcNext} from "react-icons/fc";
 import ReactPaginate from 'react-paginate';
 import AppContext from '../../Context/Context';
 import CreateBill from '../../Components/Billing/CreateBill';
+import UpdateBill from '../../Components/Billing/UpdateBill';
 import '../Users/users.css'
 
 // import {useAuthState} from 'react-firebase-hooks/auth'
@@ -15,9 +16,9 @@ function Billings() {
     const {reload,setShowUpdate, setShowCreate,setReload}=useContext(AppContext)
 
     const [billList, setbillList]=useState([]);
-    const [clientList, setClientList]=useState([]);
-    const [currbill, setCurrbill]=useState({});
-    const [billofClient, setBillofClient]=useState([]);
+    const [currBill, setCurrBill]=useState({});
+    const [currClient, setCurrClient]=useState({});
+    const [billofClient, setBillofClient]=useState({}); /*OBJECT with id of a bill eqqual to a client doc*/ 
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const rowPerPage=10
@@ -35,31 +36,33 @@ function Billings() {
             let billOfClient={}
             for (let i = 0; i < billList.length; i++) {
               for (let j = 0; j < clientList.length; j++) {
-                if (billList[i].uid==clientList[j].uid) {   
+                if (billList[i].uid===clientList[j].uid) {   
                   billOfClient[billList[i].id]=clientList[j];
                 }
               }
             }
             setBillofClient(billOfClient)
             setbillList(billList);
-            setClientList(clientList);
             setTotalPages(Math.ceil(billList.length/rowPerPage))
         }
         loadData()
     },[reload])
+
     console.log("bill of client:  "+ JSON.stringify(billofClient))
+    console.log('bill id: '+JSON.stringify(currBill.id))
     const rowStart=currentPage * rowPerPage;
     const rowEnd=rowStart + rowPerPage
     const subList=billList.slice(rowStart,rowEnd);
     
     const getClientName= (uid)=>{
-        console.log("uid in getdoc:"+uid)
-        console.log("fullname in getdoc:"+JSON.stringify(billofClient[uid]))
+        // console.log("uid in getdoc:"+uid)
+        // console.log("fullname in getdoc:"+JSON.stringify(billofClient[uid]))
         return  billofClient[uid].fullname
     }
+
     const deletebill= async (bill)=>{ 
-      console.log('update bill modal : '+ JSON.stringify(bill))
-      await deleteDoc(doc(billRef,bill.uid))
+      console.log('delete bill modal : '+ JSON.stringify(bill))
+      await deleteDoc(doc(billRef,bill.id))
       setReload(!reload)
     }
   return (
@@ -93,7 +96,8 @@ function Billings() {
                 </button>
                 <ul className="dropdown-menu text-center align-middle p-0">
                   <li onClick={()=>{
-                      setCurrbill(bill)
+                      setCurrBill(bill)
+                      setCurrClient(billofClient[bill.id])
                       setShowUpdate(true);
                       console.log('show update in bill: '+bill);
                     }}>
@@ -123,7 +127,7 @@ function Billings() {
           pageRangeDisplayed={3}
       />
       <CreateBill/>
-      {/* <UpdateBill bill={currBill}/> */}
+      <UpdateBill client={currClient} bill={currBill} />
     </>
 
   )
