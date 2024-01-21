@@ -20,7 +20,7 @@ function NavigateBar() {
         const loadUrl= async ()=>{
             console.log('avatar: '+user?.email)     
             const querySnapshot = await getDocs(query(userRef, 
-            where('username','==',user?.email.split('@')[0])));
+            where('email','==',user?.email)));
             querySnapshot.forEach((doc)=>{
                 console.log(doc.data().avartar) ;
                 setAvatar(doc.data().avartar)

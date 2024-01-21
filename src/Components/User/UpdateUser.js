@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React, {useContext, useState } from 'react'
 import { userRef } from '../../config/firebase_config'
-import {doc, setDoc,} from "firebase/firestore"; 
+import {doc, updateDoc,} from "firebase/firestore"; 
 import {Button,Modal,Form} from 'react-bootstrap';
 import currentDate from '../../utils/currentDate';
 import AppContext from '../../Context/Context';
@@ -33,8 +33,7 @@ function UpdateUser(prop) {
     const docData = {
       uid:prop.user.uid ,
       full_name:fullname ==="" ? prop.user.full_name : fullname,
-      // email: email===""? prop.client.email : email,
-      // if field email doesnt existed from the begining then u can not update it
+      email: email===""? prop.user.email : email,
       phone: phone===''? prop.user.phone: phone ,
       password: pass ===""? prop.user.password : pass,
       address: address===""? prop.user.address : address,
@@ -58,7 +57,7 @@ function UpdateUser(prop) {
 
     const handleUpdateUser= async ()=>{
         console.log('update user doc : '+ JSON.stringify(docData))  
-        await setDoc(doc(userRef,prop.user.uid),docData)
+        await updateDoc(doc(userRef,prop.user.uid),docData)
         setShowUpdate(false);
         setReload(!reload)
         resetData()

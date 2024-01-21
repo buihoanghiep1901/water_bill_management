@@ -17,8 +17,8 @@ function CreateBill() {
     const [dueDate, setDueDate]=useState("")
     const [status, setStatus]=useState(true)
 
-    const getClient=async(uid)=>{
-        const result= await getDoc(doc(clientRef,uid)) 
+    const getClient=async(clientID)=>{
+        const result= await getDoc(doc(clientRef,clientID)) 
         setClientData(result.data())
     }
 
@@ -39,8 +39,8 @@ function CreateBill() {
     }
 
     const docData = {
-      id:   String(Date.now()) ,
-      uid:   clientData.uid ,
+      uid:   String(Date.now()) ,
+      clientID:   clientData.uid ,
       previous_read: preRead,
       current_read: currRead,
       amount:Math.floor(currRead-preRead),
@@ -65,7 +65,7 @@ function CreateBill() {
     const handleCreateBill= async ()=>{
       console.log('create bill doc : '+ JSON.stringify(docData))
       // console.log('create bill modal : '+ JSON.stringify(modalData))
-      await setDoc(doc(billRef,docData.id),docData);
+      await setDoc(doc(billRef,docData.uid),docData);
       resetData()
       setShowCreate(false);
       setReload(!reload)
@@ -87,7 +87,6 @@ function CreateBill() {
         <Modal.Body>
           <Form>
             <Form.Group className="mb-3 d-flex" >
-              {/* <Form.Label>Client ID</Form.Label> */}
               <Form.Control
                 className='me-2'
                 type="text"
@@ -107,8 +106,6 @@ function CreateBill() {
                 type="text"
                 name='fullname'
                 value={clientData.fullname}
-                // onChange={e=>setFullname(e.target.value)}
-                
               />
             </Form.Group>
 
@@ -116,10 +113,8 @@ function CreateBill() {
               <Form.Label>Phone</Form.Label>
               <Form.Control
                 type="text"
-                name='phoner number'
+                name='phone number'
                 value={clientData.phone}
-                // onChange={e=>setEmail(e.target.value)}
-
               />
             </Form.Group>
 
@@ -129,7 +124,6 @@ function CreateBill() {
                 type="text"
                 name='address'
                 value={clientData.address}
-                // onChange={e=>setPass(e.target.value)}
               />
             </Form.Group>
 
@@ -139,7 +133,6 @@ function CreateBill() {
                 type="text"
                 name='address'
                 value={clientData.category ? 'Resident':'Business'}
-                // onChange={e=>setPass(e.target.value)}
               />
             </Form.Group>
 

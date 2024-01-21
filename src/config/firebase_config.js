@@ -22,3 +22,4 @@ export const db = getFirestore(app);
  export const clientRef=collection(db,'clients')
  export const billRef=collection(db,'billings')
  export const categoryRef=collection(db,'categories')
+ export const testRef=collection(db,'test')

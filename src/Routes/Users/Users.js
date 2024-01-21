@@ -10,6 +10,7 @@ import AppContext from '../../Context/Context';
 import UpdateUser from '../../Components/User/UpdateUser';
 import CreateUser from '../../Components/User/CreateUser';
 import './users.css'
+import changeDateFomat from '../../utils/changeDate';
 
 // import {useAuthState} from 'react-firebase-hooks/auth'
 function Users() {
@@ -67,7 +68,7 @@ function Users() {
             return <tr key={user.uid}>
             <td className='text-center align-middle'>{user.full_name}</td>
             <td className='text-center align-middle'>{user.phone}</td>
-            <td className='text-center align-middle'>{user.date_created}</td>
+            <td className='text-center align-middle'>{changeDateFomat(user.date_created)}</td>
             <td className='text-center align-middle'><div className="pill-status" style={user.status ? {backgroundColor: "lightgreen"}:{backgroundColor: "lightcoral"}}>{user.status ? 'Active':'Inactive'}</div></td>
             <td>{
               <div className='text-center p-0' >

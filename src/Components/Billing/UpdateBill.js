@@ -49,8 +49,8 @@ function UpdateBill(prop) {
     }
 
     const docData = {
-      id:   prop.bill.id ,
-      uid: prop.bill.uid ,
+      uid:   prop.bill.uid ,
+      clientID: prop.bill.clientID ,
       previous_read:getPreRead() ,
       current_read: getCurrRead(),
       amount: Math.floor( getCurrRead()- getPreRead()),
@@ -74,7 +74,7 @@ function UpdateBill(prop) {
     const handleUpdateBill= async ()=>{
       console.log('create bill doc : '+ JSON.stringify(docData))
       // console.log('create bill modal : '+ JSON.stringify(modalData))
-      await setDoc(doc(billRef,docData.id),docData);
+      await setDoc(doc(billRef,docData.uid),docData);
       resetData()
       setShowUpdate(false);
       setReload(!reload)
@@ -101,7 +101,7 @@ function UpdateBill(prop) {
               <Form.Control
                 className='me-2'
                 type="text"
-                name='uid'
+                name='client id'
                 value={prop.client.uid}
               />
             </Form.Group>
@@ -119,7 +119,7 @@ function UpdateBill(prop) {
               <Form.Label>Phone</Form.Label>
               <Form.Control
                 type="text"
-                name='phoner number'
+                name='phone number'
                 value={prop.client.phone}
               />
             </Form.Group>

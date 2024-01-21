@@ -1,12 +1,14 @@
+// @ts-nocheck
 import React, { useContext, useEffect, useState } from 'react'
-import {getDocs,} from "firebase/firestore"; 
-import vamp from '../../assets/images/vamp.jpg'
+import Papa from 'papaparse'
+import {getDocs, doc, updateDoc,deleteField, setDoc} from "firebase/firestore"; 
 import AppContext from '../../Context/Context'
-import { billRef, categoryRef, clientRef, userRef } from '../../config/firebase_config';
-import {  Card} from 'react-bootstrap'
+import { billRef, categoryRef, clientRef, testRef, userRef } from '../../config/firebase_config';
+import {Card, Form,Button} from 'react-bootstrap'
 import './Dashboard.css'
 function Dashboard() {
   const{reload}=useContext(AppContext)
+  const [data,setData]=useState("")
 
   const [lengthUser, setLengthUser]=useState(0)
   const [lengthClient, setLengthClient]=useState(0)
@@ -27,56 +29,112 @@ function Dashboard() {
     load()
   },[reload]);
   
+  const handleFile= async (e)=>{
+    const file= await e.target.files[0]
+    Papa.parse(file,{
+      header: true,
+      //delete the last line that is empty
+      skipEmptyLines: true,
+      complete: (results)=>{
+        setData(results.data)
+      },
+    })
+
+    console.log("data in CVS FILE:\n",data.length, JSON.stringify(data))
+  }
+
+  const handleImport= async ()=>{
+    data.forEach(async (row)=>{
+      await setDoc(doc(testRef,row.id),row)
+    })
+  }
+
+  const handleExport= async ()=>{
+    const result=await getDocs(testRef)
+    result.forEach(async (row)=>{
+      await setDoc(doc(testRef,row.uid),row)
+    })
+  }
+
+  const handleUpdate= async ()=>{
+    const result = await getDocs(billRef)
+    result.forEach((bill)=>{
+      updateDoc(doc(billRef,bill.data().id),{
+        // clientID: bill.data().uid
+        id: deleteField(),
+      })
+    })
+  }
+
   return (
+    <>
+      <Button onClick={()=>{handleUpdate()}}>
+        Import
+      </Button>
 
-    <div className='d-flex justify-content-around flex-row flex-wrap align-items-center dashboard'>
-      <Card style={{ width: '30rem' } } className="card">
-        <Card.Img variant="top" className='card__image' style={{ backgroundColor: "lightcoral"}} />
-        <Card.Body className='p-0 text-center' >
-          <hr  className='m-0'/>
-          <Card.Title>Total Staff</Card.Title>
-          <Card.Text>
-            {lengthUser}
-          </Card.Text>
-        </Card.Body>
-      </Card>
+      <Button onClick={()=>{handleExport()}}>
+        Export
+      </Button>
 
-      <Card style={{ width: '30rem' } } className="card">
-        <Card.Img variant="top"  className='card__image' style={{ backgroundColor: "lightgreen"} }/>
-        <Card.Body className='p-0 text-center'>
-          <hr  className='m-0'/>
-          <Card.Title>Total Client</Card.Title>
-          <Card.Text>
-            {lengthClient}
-          </Card.Text>
-        </Card.Body>
-      </Card>
+      <Form>
+        <Form.Control type="file" accept='.csv' onChange={(e)=>{handleFile(e)}} />
+      </Form>
 
-      <Card style={{ width: '30rem' } } className="card">
-        <Card.Img variant="top"  className='card__image'  style={{ backgroundColor: "lightblue"} }/>
-        <Card.Body className='p-0 text-center'>
-          <hr  className='m-0'/>
-          <Card.Title>Total Bills</Card.Title>
-          <Card.Text>
-            {lengthBill}
-          </Card.Text>
-        </Card.Body>
-      </Card>
+      <div className='d-flex justify-content-around flex-row flex-wrap align-items-center dashboard'>
+        
 
-      <Card style={{ width: '30rem' } } className="card">
-        <Card.Img variant="top"  className='card__image' style={{ backgroundColor: "#CBC3E3"} } />
-        <Card.Body className='p-0 text-center'>
-          <hr  className='m-0'/>
-          <Card.Title>Total Category</Card.Title>
-          <Card.Text>
-            {lengthCategory}
-          </Card.Text>
-        </Card.Body>
-      </Card>
+        <Card style={{ width: '30rem' } } className="card">
+          <Card.Img variant="top" className='card__image' style={{ backgroundColor: "lightcoral"}} />
+          <Card.Body className='p-0 text-center' >
+            <hr  className='m-0'/>
+            <Card.Title>Total Staff</Card.Title>
+            <Card.Text>
+              {lengthUser}
+            </Card.Text>
+          </Card.Body>
+        </Card>
 
+        <Card style={{ width: '30rem' } } className="card">
+          <Card.Img variant="top"  className='card__image' style={{ backgroundColor: "lightgreen"} }/>
+          <Card.Body className='p-0 text-center'>
+            <hr  className='m-0'/>
+            <Card.Title>Total Client</Card.Title>
+            <Card.Text>
+              {lengthClient}
+            </Card.Text>
+          </Card.Body>
+        </Card>
+
+        <Card style={{ width: '30rem' } } className="card">
+          <Card.Img variant="top"  className='card__image'  style={{ backgroundColor: "lightblue"} }/>
+          <Card.Body className='p-0 text-center'>
+            <hr  className='m-0'/>
+            <Card.Title>Total Bills</Card.Title>
+            <Card.Text>
+              {lengthBill}
+            </Card.Text>
+          </Card.Body>
+        </Card>
+
+        <Card style={{ width: '30rem' } } className="card">
+          <Card.Img variant="top"  className='card__image' style={{ backgroundColor: "#CBC3E3"} } />
+          <Card.Body className='p-0 text-center'>
+            <hr  className='m-0'/>
+            <Card.Title>Total Category</Card.Title>
+            <Card.Text>
+              {lengthCategory}
+            </Card.Text>
+          </Card.Body>
+        </Card>
+
+      </div>
     
-    </div>
+    </>
+
   )
 }
 
 export default Dashboard
+
+      
+
