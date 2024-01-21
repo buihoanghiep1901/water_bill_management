@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 // @ts-nocheck
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { Dropdown, Nav,Form,Navbar} from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 import vamp from '../../assets/images/vamp.jpg'
@@ -8,8 +8,10 @@ import  "./navbar.css"
 import { auth,userRef } from '../../config/firebase_config'
 import { signOut} from 'firebase/auth'
 import { query, getDocs,where} from "firebase/firestore"; 
+import AppContext from '../../Context/Context'
 import {useAuthState} from 'react-firebase-hooks/auth'
 function NavigateBar() {
+    const {role,setRole}=useContext(AppContext)
     const [user]=useAuthState(auth);
     const [avatar, setAvatar]=useState("")
     const Navigate=useNavigate();
@@ -22,6 +24,7 @@ function NavigateBar() {
             querySnapshot.forEach((doc)=>{
                 console.log(doc.data().avartar) ;
                 setAvatar(doc.data().avartar)
+                setRole(doc.data().role)
             })
        }
         loadUrl()
@@ -43,7 +46,10 @@ function NavigateBar() {
             </Form>
             <Nav className="align-items-center flex-row">
                 <img src={avatar? avatar: vamp} alt="avatar" className='avatar' />
-                <h5 className=''>{user?.email}</h5>
+                <div>
+                    <h5 className='m-0'>{user?.email}</h5>
+                    <h6 className='m-0'>{role ? 'Admin': 'Staff'}</h6>
+                </div>
                 <Dropdown>
                     <Dropdown.Toggle variant="white" className='border-0' id="dropdown-basic">
                     </Dropdown.Toggle>

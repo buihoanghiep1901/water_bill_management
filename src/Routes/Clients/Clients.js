@@ -13,7 +13,7 @@ import '../Users/users.css'
 
 // import {useAuthState} from 'react-firebase-hooks/auth'
 function Clients() {
-    const {reload,setShowCreate,setReload, setShowUpdate}=useContext(AppContext)
+    const {role,reload,setShowCreate,setReload, setShowUpdate}=useContext(AppContext)
     
     const [clientList, setClientList]=useState([]);
     const [currClient, setCurrClient]=useState({});
@@ -46,10 +46,12 @@ function Clients() {
     }
   return (
     <>
-      
-      <Button className='btn-modal' onClick={() => {setShowCreate(true)}}>
-        Add client
-      </Button>
+      {
+        role&&
+        <Button className='btn-modal' onClick={() => {setShowCreate(true)}}>
+          Add client
+        </Button>
+      }
       <Table striped bordered hover className='my-2' >
         <thead>
           <tr className='text-center'>
@@ -83,7 +85,7 @@ function Clients() {
                     Detail
                   </li>
                   <hr className='m-0' />
-                  <li onClick={()=>deleteClient(client)} >Delete</li>
+                  {role&&<li onClick={()=>deleteClient(client)} >Delete</li>}
                 </ul>
               </div>
               }
@@ -105,7 +107,7 @@ function Clients() {
           previousLabel={<FcPrevious />}
           pageRangeDisplayed={3}
       />
-      <CreateClient/>
+      {role&&<CreateClient/>}
       <UpdateClient client={currClient}/>
     </>
 

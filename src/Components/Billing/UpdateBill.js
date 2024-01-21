@@ -8,7 +8,7 @@ import AppContext from '../../Context/Context';
 import '../User/Modal.css'
 function UpdateBill(prop) {
 
-    const {reload,showUpdate,setShowUpdate,setReload}=useContext(AppContext)
+    const {role,reload,showUpdate,setShowUpdate,setReload}=useContext(AppContext)
     const [clientData, setClientData]=useState({})
     const [preRead, setPreRead]=useState(0)
     const [currRead, setCurrRead]=useState(0)
@@ -225,9 +225,12 @@ function UpdateBill(prop) {
           <Button variant="secondary" onClick={() => setShowUpdate(false)}>
             Close
           </Button>
-          <Button type='submit' onClick={() =>{handleUpdateBill()}}>
-            Submit
-          </Button>
+          {
+            role&&
+            <Button type='submit' onClick={() =>{handleUpdateBill()}}>
+              Submit
+            </Button>
+          }
         </Modal.Footer>
       </Modal>
     </>

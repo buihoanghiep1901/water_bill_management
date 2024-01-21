@@ -7,7 +7,7 @@ import currentDate from '../../utils/currentDate';
 import AppContext from '../../Context/Context';
 import './Modal.css'
 function UpdateUser(prop) {
-    const {showUpdate,reload,setShowUpdate,setReload}=useContext(AppContext)
+    const {role,showUpdate,reload,setShowUpdate,setReload}=useContext(AppContext)
      
     const [fullname, setFullname]=useState("")
     const [email, setEmail]=useState("")
@@ -15,14 +15,15 @@ function UpdateUser(prop) {
     const [pass, setPass]=useState("")
     const [address, setAddress]=useState("")
     const [status, setStatus]=useState(true)
+    const [roleUser, setRoleUser]=useState(false)
     const [file, setFile]=useState("")
     console.log('prop user'+JSON.stringify(prop))
 
 
-    const checkType=()=>{
-        if (typeof(status)=='boolean') {
+    const checkType=(type)=>{
+        if (typeof(type)=='boolean') {
             return status
-        }else if(status==="1"){
+        }else if(type==="1"){
             return true;
         }else{
             return false;
@@ -33,11 +34,13 @@ function UpdateUser(prop) {
       uid:prop.user.uid ,
       full_name:fullname ==="" ? prop.user.full_name : fullname,
       // email: email===""? prop.client.email : email,
+      // if field email doesnt existed from the begining then u can not update it
       phone: phone===''? prop.user.phone: phone ,
       password: pass ===""? prop.user.password : pass,
       address: address===""? prop.user.address : address,
       avartar: file===""? prop.user.avartar : file,
-      status: checkType(),
+      status: checkType(status),
+      role: checkType(roleUser),
       date_created:  currentDate(),
       date_updated:  currentDate(),
     };
@@ -133,13 +136,24 @@ function UpdateUser(prop) {
               />
             </Form.Group>
 
-            <Form.Select 
+            <Form.Select
+              className='mb-3'
               onChange={e=>setStatus(e.target.value)} 
               name='status'
               defaultValue={prop.user.status? 1: 2}>
               <option>Choose Status </option>
               <option value="1">Active</option>
               <option value="2">Inactive</option>
+            </Form.Select>
+
+            <Form.Select 
+              className='mb-3'
+              onChange={e=>setRoleUser(e.target.value)} 
+              name='role'
+              defaultValue={prop.user.role? 1: 2}>
+              <option>Choose Role </option>
+              <option value="1">Admin</option>
+              <option value="2">Staff</option>
             </Form.Select>
 
             <Form.Group className="mb-3" >
@@ -157,9 +171,12 @@ function UpdateUser(prop) {
           <Button variant="secondary" onClick={() => {setShowUpdate(false)}}>
             Close
           </Button>
-          <Button type='submit' onClick={() =>{handleUpdateUser()}}>
-            Submit
-          </Button>
+          {
+            role&&
+            <Button type='submit' onClick={() =>{handleUpdateUser()}}>
+              Submit
+            </Button>
+          }
         </Modal.Footer>
       </Modal>
     </>

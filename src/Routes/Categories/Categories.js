@@ -1,65 +1,100 @@
-import React from 'react'
-import { Accordion } from 'react-bootstrap'
+// @ts-nocheck
+import React, { useContext, useEffect, useState } from 'react'
+import AppContext from '../../Context/Context';
+import {getDocs, query as clause, doc,  deleteDoc, orderBy} from "firebase/firestore"; 
+import ReactPaginate from 'react-paginate';
+import { categoryRef } from '../../config/firebase_config';
+import { Accordion, Button } from 'react-bootstrap'
+import { FcPrevious , FcNext} from "react-icons/fc";
+import UpdateCategory from '../../Components/Category/UpdateCategory';
+import CreateCategory from '../../Components/Category/CreateCategory';
 import './category.css'
 
+
 function Categories() {
+  const {role,reload,setShowCreate,setReload, setShowUpdate}=useContext(AppContext)
+    
+    const [categoryList, setcategoryList]=useState([]);
+    const [currcategory, setCurrcategory]=useState({});
+    const [currentPage, setCurrentPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const rowPerPage=5
+
+    useEffect(()=>{
+        const loadData= async ()=>{
+                  console.log(`star load data in update `)
+            const queryDoc= await getDocs(clause(categoryRef, orderBy('uid')))
+            const categoryList=queryDoc.docs.map((doc)=>{
+                  return doc.data()
+              })
+              console.log(`END load data in category `)
+              setcategoryList(categoryList);
+              setTotalPages(Math.ceil(categoryList.length/rowPerPage))
+        }
+        loadData()
+    },[reload])
+    const rowStart=currentPage * rowPerPage;
+    const rowEnd=rowStart + rowPerPage
+    const subList=categoryList.slice(rowStart,rowEnd);
+    // console.log(`row start ${rowStart}, ${rowEnd}: `+subList)
+
+    const deletecategory= async (category)=>{      
+      await deleteDoc(doc(categoryRef,category.uid))
+      setReload(!reload)
+    }
+
   return (
     <>
-    <Accordion defaultActiveKey="0" className='category'>
-      <Accordion.Item eventKey="0" className='mb-4'>
-        <Accordion.Header>Business</Accordion.Header>
-        <Accordion.Body>
+      {
+        role&&
+        <Button className='btn-modal' onClick={() => {setShowCreate(true)}}>
+          Add category
+        </Button>
+      }
+    
+      <Accordion defaultActiveKey="0" className='category'>
+        {
+          subList.map((category)=>{
+            return <>
+              <Accordion.Item eventKey={category.uid} className='mb-4'>
+                <Accordion.Header>{category.title}</Accordion.Header>
+                <Accordion.Body>
+                  <div>
+                    {category.detail}
+                  </div>
+                  <div className='d-flex justify-content-end'>
+                    <Button className='me-3' 
+                      onClick={() => {
+                        setCurrcategory(category)
+                        setShowUpdate(true)}}>
+                      Update
+                    </Button>
+                    <Button variant="secondary"  onClick={() => {deletecategory(category)}}>
+                      Delete
+                    </Button>
+                  </div>
+                </Accordion.Body>
+              </Accordion.Item>
+            </>
+          })
+        }
+      </Accordion>
 
-          15000vnd per number
-          
-        </Accordion.Body>
-      </Accordion.Item>
-      <Accordion.Item eventKey="1" className='mb-4'>
-        <Accordion.Header>Resident</Accordion.Header>
-        <Accordion.Body>
-          <p>0-10: 7500 per number</p>
-          <p>10-20: 8800 per number</p>
-          <p>20-30: 12000 per number</p>
-          <p>30 and more: 24000 per number</p>
-        </Accordion.Body>
-      </Accordion.Item>
-      <Accordion.Item eventKey="2" className='mb-4'>
-        <Accordion.Header>Type 3</Accordion.Header>
-        <Accordion.Body>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-          culpa qui officia deserunt mollit anim id est laborum.
-        </Accordion.Body>
-      </Accordion.Item>
-      <Accordion.Item eventKey="3" className='mb-4'>
-        <Accordion.Header>Type 4</Accordion.Header>
-        <Accordion.Body>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-          culpa qui officia deserunt mollit anim id est laborum.
-        </Accordion.Body>
-      </Accordion.Item>
-      <Accordion.Item eventKey="4" className='mb-4'>
-        <Accordion.Header>Type 5</Accordion.Header>
-        <Accordion.Body>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-          culpa qui officia deserunt mollit anim id est laborum.
-        </Accordion.Body>
-      </Accordion.Item>
-    </Accordion>
+      <ReactPaginate
+            containerClassName={"pagination"}
+            pageClassName={"page-item"}
+            activeClassName={"active-page"}
+            pageCount={totalPages}
+            onPageChange={(event)=>{setCurrentPage(event.selected)}}
+            forcePage={currentPage}
+            nextLabel={<FcNext />}
+            previousLabel={<FcPrevious />}
+            pageRangeDisplayed={3}
+        />
+      
+      {role&&<CreateCategory/>}
+      
+      <UpdateCategory category={currcategory}/>
     </>
   )
 }

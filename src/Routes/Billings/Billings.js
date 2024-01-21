@@ -13,7 +13,7 @@ import '../Users/users.css'
 
 // import {useAuthState} from 'react-firebase-hooks/auth'
 function Billings() {
-    const {reload,setShowUpdate, setShowCreate,setReload}=useContext(AppContext)
+    const {role,reload,setShowUpdate, setShowCreate,setReload}=useContext(AppContext)
 
     const [billList, setbillList]=useState([]);
     const [currBill, setCurrBill]=useState({});
@@ -67,10 +67,11 @@ function Billings() {
     }
   return (
     <>
-      
-      <Button className='btn-modal' onClick={() => {setShowCreate(true)}}>
-        Add new bill
-      </Button>
+      {role&&
+        <Button className='btn-modal' onClick={() => {setShowCreate(true)}}>
+          Add new bill
+        </Button>
+      }
       <Table striped bordered hover className='my-2' >
         <thead>
           <tr className='text-center'>
@@ -104,7 +105,7 @@ function Billings() {
                       Detail
                   </li>
                   <hr className='m-0' />
-                  <li onClick={()=>deletebill(bill)} >Delete</li>
+                  {role&&<li onClick={()=>deletebill(bill)} >Delete</li>}
                 </ul>
               </div>
               }
@@ -126,7 +127,7 @@ function Billings() {
           previousLabel={<FcPrevious />}
           pageRangeDisplayed={3}
       />
-      <CreateBill/>
+      {role&&<CreateBill/>}
       <UpdateBill client={currClient} bill={currBill} />
     </>
 

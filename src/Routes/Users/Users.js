@@ -13,7 +13,7 @@ import './users.css'
 
 // import {useAuthState} from 'react-firebase-hooks/auth'
 function Users() {
-    const {reload,setShowUpdate, setShowCreate,setReload}=useContext(AppContext)
+    const {role,reload,setShowUpdate, setShowCreate,setReload}=useContext(AppContext)
 
     const [userList, setUserList]=useState([]);
     const [currUser, setCurrUser]=useState({});
@@ -44,10 +44,13 @@ function Users() {
     }
   return (
     <>
-      
-      <Button className='btn-modal' onClick={() => {setShowCreate(true)}}>
+      {
+        role&&
+        <Button className='btn-modal' onClick={() => {setShowCreate(true)}}>
         Add user
       </Button>
+      }
+      
       <Table striped bordered hover className='my-2' >
         <thead>
           <tr className='text-center'>
@@ -80,7 +83,7 @@ function Users() {
                       Detail
                   </li>
                   <hr className='m-0' />
-                  <li onClick={()=>deleteUser(user)} >Delete</li>
+                  {role&&<li onClick={()=>deleteUser(user)} >Delete</li>}
                 </ul>
               </div>
               }
@@ -102,7 +105,7 @@ function Users() {
           previousLabel={<FcPrevious />}
           pageRangeDisplayed={3}
       />
-      <CreateUser/>
+      {role&&<CreateUser/>}
       <UpdateUser user={currUser}/>
     </>
 

@@ -16,8 +16,8 @@ function CreateUser() {
     const [pass, setPass]=useState("")
     const [address, setAddress]=useState("")
     const [status, setStatus]=useState(true)
+    const [role, setRole]=useState(false)
     const [file, setFile]=useState("")
-
     const docData = {
       uid:   String(Date.now()) ,
       full_name:fullname,
@@ -27,6 +27,7 @@ function CreateUser() {
       address: address,
       avartar: file,
       status: status==="1" ? true:false,
+      role: role==="1" ? true:false,
       date_created:  currentDate(),
       date_updated:  currentDate(),
     };
@@ -39,6 +40,7 @@ function CreateUser() {
       setAddress('')
       setFile('')
       setStatus(true)
+      setRole(false)
 
     }
 
@@ -118,12 +120,20 @@ function CreateUser() {
               />
             </Form.Group>
 
-            <Form.Select 
+            <Form.Select className='mb-3'
               onChange={e=>setStatus(e.target.value)} 
               name='status'>
               <option>Choose Status </option>
               <option value="1">Active</option>
               <option value="2">Inactive</option>
+            </Form.Select>
+
+            <Form.Select className='mb-3'
+              onChange={e=>setRole(e.target.value)} 
+              name='role'>
+              <option>Choose Role </option>
+              <option value="1">Admin</option>
+              <option value="2">Staff</option>
             </Form.Select>
 
             <Form.Group className="mb-3" >

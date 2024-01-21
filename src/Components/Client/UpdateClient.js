@@ -6,7 +6,7 @@ import {Button,Modal,Form} from 'react-bootstrap';
 import currentDate from '../../utils/currentDate';
 import AppContext from '../../Context/Context';
 function UpdateClient(prop) {
-    const {showUpdate,reload,setShowUpdate,setReload}=useContext(AppContext)
+    const {role,showUpdate,reload,setShowUpdate,setReload}=useContext(AppContext)
     
     const [fullname, setFullname]=useState("")
     const [email, setEmail]=useState("")
@@ -157,9 +157,11 @@ function UpdateClient(prop) {
           <Button variant="secondary" onClick={() => {setShowUpdate(false)}}>
             Close
           </Button>
-          <Button type='submit' onClick={() =>{handleUpdateclient()}}>
-            Submit
-          </Button>
+          {role&&
+            <Button type='submit' onClick={() =>{handleUpdateclient()}}>
+              Submit
+            </Button>
+          }
         </Modal.Footer>
       </Modal>
     </>
