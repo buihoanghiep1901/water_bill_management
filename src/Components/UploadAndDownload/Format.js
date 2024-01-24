@@ -42,6 +42,8 @@ const categoryFormat=[
     'uid',
     'title',
     'detail',
+    'date_created',
+    'date_updated',
 ]
 
 export const format={

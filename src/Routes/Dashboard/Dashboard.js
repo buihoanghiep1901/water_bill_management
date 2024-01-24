@@ -5,7 +5,6 @@ import AppContext from '../../Context/Context'
 import { billRef, categoryRef, clientRef, userRef } from '../../config/firebase_config';
 import {Card} from 'react-bootstrap'
 import './Dashboard.css'
-import UploadAndDownload from '../../Components/UploadAndDownload/UploadAndDownload';
 function Dashboard() {
   const{reload}=useContext(AppContext)
 
@@ -31,7 +30,6 @@ function Dashboard() {
   
   return (
     <>
-      <UploadAndDownload collection="test"/>
       
       <div className='d-flex justify-content-around flex-row flex-wrap align-items-center dashboard'>
         

@@ -4,7 +4,7 @@ import AppContext from '../../Context/Context';
 import {getDocs, query as clause, doc,  deleteDoc, orderBy} from "firebase/firestore"; 
 import ReactPaginate from 'react-paginate';
 import { categoryRef } from '../../config/firebase_config';
-import { Accordion, Button } from 'react-bootstrap'
+import { Accordion, Button, Form } from 'react-bootstrap'
 import { FcPrevious , FcNext} from "react-icons/fc";
 import UpdateCategory from '../../Components/Category/UpdateCategory';
 import CreateCategory from '../../Components/Category/CreateCategory';
@@ -62,9 +62,8 @@ function Categories() {
               <Accordion.Item eventKey={category.uid} className='mb-4'>
                 <Accordion.Header>{category.title}</Accordion.Header>
                 <Accordion.Body>
-                  <div>
-                    {category.detail}
-                  </div>
+                  <Form.Control as='textarea' rows={5} value={category.detail}>
+                  </Form.Control>
                   {
                     role&&
                     <div className='d-flex justify-content-end'>
