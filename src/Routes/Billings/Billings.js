@@ -10,7 +10,8 @@ import AppContext from '../../Context/Context';
 import CreateBill from '../../Components/Billing/CreateBill';
 import UpdateBill from '../../Components/Billing/UpdateBill';
 import '../Users/users.css'
-import changeDateFomat from '../../utils/changeDate';
+import UploadAndDownload from '../../Components/UploadAndDownload/UploadAndDownload';
+import { changeDateFomat } from '../../utils/changeDate';
 
 // import {useAuthState} from 'react-firebase-hooks/auth'
 function Billings() {
@@ -81,10 +82,13 @@ function Billings() {
 
   return (
     <>
-      {role&&
-        <Button className='btn-modal' onClick={() => {setShowCreate(true)}}>
-          Add new bill
-        </Button>
+      {
+        role&&<div className='d-flex justify-content-between '>
+          <UploadAndDownload collection='bill'/>
+          <Button className='btn-modal' onClick={() => {setShowCreate(true)}}>
+            Add bill
+          </Button>
+        </div>
       }
 
       <Table striped bordered hover className='my-2' >

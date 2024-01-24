@@ -22,8 +22,8 @@ function NavigateBar() {
             const querySnapshot = await getDocs(query(userRef, 
             where('email','==',user?.email)));
             querySnapshot.forEach((doc)=>{
-                console.log(doc.data().avartar) ;
-                setAvatar(doc.data().avartar)
+                console.log(doc.data().avatar) ;
+                setAvatar(doc.data().avatar)
                 setRole(doc.data().role)
             })
        }

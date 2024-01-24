@@ -10,6 +10,7 @@ import CreateClient from '../../Components/Client/CreateClient';
 import UpdateClient from '../../Components/Client/UpdateClient';
 import AppContext from '../../Context/Context';
 import '../Users/users.css'
+import UploadAndDownload from '../../Components/UploadAndDownload/UploadAndDownload';
 
 // import {useAuthState} from 'react-firebase-hooks/auth'
 function Clients() {
@@ -24,7 +25,7 @@ function Clients() {
        
     useEffect(()=>{
         const loadData= async ()=>{
-                  console.log(`star load data in update `)
+            console.log(`star load data in update `)
             const queryDoc= await getDocs(clause(clientRef, orderBy('uid')))
             const clientList=queryDoc.docs.map((doc)=>{
                   return doc.data()
@@ -47,10 +48,12 @@ function Clients() {
   return (
     <>
       {
-        role&&
-        <Button className='btn-modal' onClick={() => {setShowCreate(true)}}>
-          Add client
-        </Button>
+        role&&<div className='d-flex justify-content-between '>
+          <UploadAndDownload collection='client'/>
+          <Button className='btn-modal' onClick={() => {setShowCreate(true)}}>
+            Add client
+          </Button>
+        </div>
       }
       <Table striped bordered hover className='my-2' >
         <thead>

@@ -32,12 +32,12 @@ function UpdateUser(prop) {
 
     const docData = {
       uid:prop.user.uid ,
-      full_name:fullname ==="" ? prop.user.full_name : fullname,
+      fullname:fullname ==="" ? prop.user.fullname : fullname,
       email: email===""? prop.user.email : email,
       phone: phone===''? prop.user.phone: phone ,
       password: pass ===""? prop.user.password : pass,
       address: address===""? prop.user.address : address,
-      avartar: file===""? prop.user.avartar : file,
+      avatar: file===""? prop.user.avatar : file,
       status: checkType(status),
       role: checkType(roleUser),
       date_created:  currentDate(),
@@ -84,7 +84,7 @@ function UpdateUser(prop) {
                 type="text"
                 placeholder="ng van A"
                 name='fullname'
-                defaultValue={prop.user.full_name}
+                defaultValue={prop.user.fullname}
                 onChange={e=>setFullname(e.target.value)}
                 
               />
@@ -160,7 +160,7 @@ function UpdateUser(prop) {
               <Form.Control
                 type="file"
                 name='avatar'
-                // value={modalData?.avartar}
+                // value={modalData?.avatar}
                 onChange={e=>setFile(e.target.value)}
               />
             </Form.Group>

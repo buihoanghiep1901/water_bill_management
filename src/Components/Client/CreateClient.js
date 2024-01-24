@@ -11,7 +11,6 @@ function CreateClient() {
     const {showCreate,reload,setShowCreate,setReload}=useContext(AppContext)
      
     const [fullname, setFullname]=useState("")
-    const [email, setEmail]=useState("")
     const [address, setAddress]=useState("")
     const [phone, setPhone]=useState("")
     const [firstRead, setFirstRead]=useState("")
@@ -21,7 +20,6 @@ function CreateClient() {
     const docData = {
       uid:   String(Date.now()) ,
       fullname:fullname,
-      email: email,
       phone: phone,
       firstreading:firstRead,
       address: address,
@@ -33,7 +31,6 @@ function CreateClient() {
 
     const resetData=()=>{
       setFullname('')
-      setEmail('')
       setPhone('')
       setAddress('')
       setFirstRead('')
@@ -74,18 +71,6 @@ function CreateClient() {
                 name='fullname'
                 onChange={e=>setFullname(e.target.value)}
                 
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" >
-              <Form.Label>Email address</Form.Label>
-              <Form.Control
-                required
-                type="email"
-                placeholder="name@example.com"
-                name='email'
-                onChange={e=>setEmail(e.target.value)}
-
               />
             </Form.Group>
 

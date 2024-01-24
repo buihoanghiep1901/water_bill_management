@@ -20,12 +20,12 @@ function CreateUser() {
     const [file, setFile]=useState("")
     const docData = {
       uid:   String(Date.now()) ,
-      full_name:fullname,
+      fullname:fullname,
       email: email,
       phone: phone,
       password: pass,
       address: address,
-      avartar: file,
+      avatar: file,
       status: status==="1" ? true:false,
       role: role==="1" ? true:false,
       date_created:  currentDate(),

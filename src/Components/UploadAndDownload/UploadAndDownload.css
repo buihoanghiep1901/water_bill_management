@@ -1,0 +1,9 @@
+.updown-btn{
+    max-width: 110px;
+    background-color: transparent;
+    border: 0;
+    color: black;
+}
+.updown-btn:hover{
+    background-color: #2285e0;
+}

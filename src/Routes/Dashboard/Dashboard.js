@@ -1,14 +1,13 @@
 // @ts-nocheck
 import React, { useContext, useEffect, useState } from 'react'
-import Papa from 'papaparse'
-import {getDocs, doc, updateDoc,deleteField, setDoc} from "firebase/firestore"; 
+import {getDocs,} from "firebase/firestore"; 
 import AppContext from '../../Context/Context'
-import { billRef, categoryRef, clientRef, testRef, userRef } from '../../config/firebase_config';
-import {Card, Form,Button} from 'react-bootstrap'
+import { billRef, categoryRef, clientRef, userRef } from '../../config/firebase_config';
+import {Card} from 'react-bootstrap'
 import './Dashboard.css'
+import UploadAndDownload from '../../Components/UploadAndDownload/UploadAndDownload';
 function Dashboard() {
   const{reload}=useContext(AppContext)
-  const [data,setData]=useState("")
 
   const [lengthUser, setLengthUser]=useState(0)
   const [lengthClient, setLengthClient]=useState(0)
@@ -29,57 +28,11 @@ function Dashboard() {
     load()
   },[reload]);
   
-  const handleFile= async (e)=>{
-    const file= await e.target.files[0]
-    Papa.parse(file,{
-      header: true,
-      //delete the last line that is empty
-      skipEmptyLines: true,
-      complete: (results)=>{
-        setData(results.data)
-      },
-    })
-
-    console.log("data in CVS FILE:\n",data.length, JSON.stringify(data))
-  }
-
-  const handleImport= async ()=>{
-    data.forEach(async (row)=>{
-      await setDoc(doc(testRef,row.id),row)
-    })
-  }
-
-  const handleExport= async ()=>{
-    const result=await getDocs(testRef)
-    result.forEach(async (row)=>{
-      await setDoc(doc(testRef,row.uid),row)
-    })
-  }
-
-  const handleUpdate= async ()=>{
-    const result = await getDocs(billRef)
-    result.forEach((bill)=>{
-      updateDoc(doc(billRef,bill.data().id),{
-        // clientID: bill.data().uid
-        id: deleteField(),
-      })
-    })
-  }
-
+  
   return (
     <>
-      <Button onClick={()=>{handleUpdate()}}>
-        Import
-      </Button>
-
-      <Button onClick={()=>{handleExport()}}>
-        Export
-      </Button>
-
-      <Form>
-        <Form.Control type="file" accept='.csv' onChange={(e)=>{handleFile(e)}} />
-      </Form>
-
+      <UploadAndDownload collection="test"/>
+      
       <div className='d-flex justify-content-around flex-row flex-wrap align-items-center dashboard'>
         
 

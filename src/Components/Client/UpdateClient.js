@@ -9,7 +9,6 @@ function UpdateClient(prop) {
     const {role,showUpdate,reload,setShowUpdate,setReload}=useContext(AppContext)
     
     const [fullname, setFullname]=useState("")
-    const [email, setEmail]=useState("")
     const [firstRead, setFirstRead]=useState(0)
     const [phone, setPhone]=useState("")
     const [address, setAddress]=useState("")
@@ -30,7 +29,6 @@ function UpdateClient(prop) {
     const docData = {
       uid:  prop.client.uid,
       fullname:fullname ==="" ? prop.client.fullname : fullname,
-      email: email===""? prop.client.email : email,
       phone: phone===''? prop.client.phone: phone ,
       firstreading: firstRead ===""? prop.client.password : firstRead,
       address: address===""? prop.client.address : address,
@@ -42,7 +40,6 @@ function UpdateClient(prop) {
 
     const resetData=()=>{
       setFullname('')
-      setEmail('')
       setPhone('')
       setFirstRead('')
       setAddress('')
@@ -83,19 +80,6 @@ function UpdateClient(prop) {
                 defaultValue={prop.client.fullname}
                 onChange={e=>setFullname(e.target.value)}
                 
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" >
-              <Form.Label>Email address</Form.Label>
-              <Form.Control
-                required
-                type="email"
-                placeholder="name@example.com"
-                name='email'
-                defaultValue={prop.client.email}
-                onChange={e=>setEmail(e.target.value)}
-
               />
             </Form.Group>
 

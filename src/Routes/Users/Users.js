@@ -10,7 +10,8 @@ import AppContext from '../../Context/Context';
 import UpdateUser from '../../Components/User/UpdateUser';
 import CreateUser from '../../Components/User/CreateUser';
 import './users.css'
-import changeDateFomat from '../../utils/changeDate';
+import { changeDateFomat } from '../../utils/changeDate';
+import UploadAndDownload from '../../Components/UploadAndDownload/UploadAndDownload';
 
 // import {useAuthState} from 'react-firebase-hooks/auth'
 function Users() {
@@ -45,11 +46,14 @@ function Users() {
     }
   return (
     <>
+      
       {
-        role&&
-        <Button className='btn-modal' onClick={() => {setShowCreate(true)}}>
-        Add user
-      </Button>
+        role&&<div className='d-flex justify-content-between '>
+          <UploadAndDownload collection='user'/>
+          <Button className='btn-modal' onClick={() => {setShowCreate(true)}}>
+            Add user
+          </Button>
+        </div>
       }
       
       <Table striped bordered hover className='my-2' >
@@ -66,7 +70,7 @@ function Users() {
           {
           subList.map((user)=>{        
             return <tr key={user.uid}>
-            <td className='text-center align-middle'>{user.full_name}</td>
+            <td className='text-center align-middle'>{user.fullname}</td>
             <td className='text-center align-middle'>{user.phone}</td>
             <td className='text-center align-middle'>{changeDateFomat(user.date_created)}</td>
             <td className='text-center align-middle'><div className="pill-status" style={user.status ? {backgroundColor: "lightgreen"}:{backgroundColor: "lightcoral"}}>{user.status ? 'Active':'Inactive'}</div></td>

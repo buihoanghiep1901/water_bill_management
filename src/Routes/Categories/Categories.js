@@ -8,6 +8,7 @@ import { Accordion, Button } from 'react-bootstrap'
 import { FcPrevious , FcNext} from "react-icons/fc";
 import UpdateCategory from '../../Components/Category/UpdateCategory';
 import CreateCategory from '../../Components/Category/CreateCategory';
+import UploadAndDownload from '../../Components/UploadAndDownload/UploadAndDownload';
 import './category.css'
 
 
@@ -46,10 +47,12 @@ function Categories() {
   return (
     <>
       {
-        role&&
-        <Button className='btn-modal' onClick={() => {setShowCreate(true)}}>
-          Add category
-        </Button>
+        role&&<div className='d-flex justify-content-between '>
+          <UploadAndDownload collection='category'/>
+          <Button className='btn-modal' onClick={() => {setShowCreate(true)}}>
+            Add category
+          </Button>
+        </div>
       }
     
       <Accordion defaultActiveKey="0" className='category'>
@@ -62,17 +65,20 @@ function Categories() {
                   <div>
                     {category.detail}
                   </div>
-                  <div className='d-flex justify-content-end'>
-                    <Button className='me-3' 
-                      onClick={() => {
-                        setCurrcategory(category)
-                        setShowUpdate(true)}}>
-                      Update
-                    </Button>
-                    <Button variant="secondary"  onClick={() => {deletecategory(category)}}>
-                      Delete
-                    </Button>
-                  </div>
+                  {
+                    role&&
+                    <div className='d-flex justify-content-end'>
+                      <Button className='me-3' 
+                        onClick={() => {
+                          setCurrcategory(category)
+                          setShowUpdate(true)}}>
+                        Update
+                      </Button>
+                      <Button variant="secondary"  onClick={() => {deletecategory(category)}}>
+                        Delete
+                      </Button>
+                    </div>
+                  }
                 </Accordion.Body>
               </Accordion.Item>
             </>
